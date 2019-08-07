@@ -43,7 +43,7 @@
   </p></details>
 
   ```bash
-  $ gpg --recv-keys 79BE3E4300411886
+  $ gpg --recv-keys 6092693E
   ```
 
   <details><summary>Подробнее</summary><p>
@@ -116,3 +116,84 @@
 
   </p></details>
 
+## HW #2 - Дисковая подсистема: RAID
+
+- Создание RAID 10
+
+  ```bash
+  $ mdadm -C -v /dev/md0 -l 10 -n 4 /dev/sd[bcde]
+  ```
+
+<details><summary>Подробнее</summary><p>
+
+  ```bash
+  $ mdadm -D /dev/md0
+  /dev/md0:
+             Version : 1.2
+       Creation Time : Wed Aug  7 18:57:00 2019
+          Raid Level : raid10
+          Array Size : 1019904 (996.00 MiB 1044.38 MB)
+       Used Dev Size : 509952 (498.00 MiB 522.19 MB)
+        Raid Devices : 4
+       Total Devices : 4
+         Persistence : Superblock is persistent
+
+         Update Time : Wed Aug  7 18:57:37 2019
+               State : clean
+      Active Devices : 4
+     Working Devices : 4
+      Failed Devices : 0
+       Spare Devices : 0
+
+              Layout : near=2
+          Chunk Size : 512K
+
+  Consistency Policy : resync
+
+                Name : otuslinux:0  (local to host otuslinux)
+                UUID : 6fda3050:6119e855:186b4ef7:73991a9f
+              Events : 52
+
+      Number   Major   Minor   RaidDevice State
+         0       8       16        0      active sync set-A   /dev/sdb
+         1       8       32        1      active sync set-B   /dev/sdc
+         2       8       48        2      active sync set-A   /dev/sdd
+         3       8       64        3      active sync set-B   /dev/sde
+  ```
+</p></details>
+
+- Cоздание 5-ти партиций
+
+  ```bash
+  echo "Creating partitions"
+  for i in {1..5}
+  do
+  gdisk /dev/md0 << EOF
+  n
+
+
+  +100M
+
+  w
+  Y
+  EOF
+  done
+  ```
+
+- Создаем вайловую систему и добавляем в fstab
+
+  ```bash
+  echo "Creating filesystems"
+  for i in {1..5}
+  do
+    sudo mkdir -p /raid/part$i;
+    sudo mkfs.ext4 /dev/md0p$i;
+    echo `sudo blkid /dev/md0p$i | awk '{print $2}'` /raid/part$i ext4 defaults 0 0 >> /etc/fstab
+  done
+  ```
+
+- Монтируем вновь созданные файловые системы
+
+```bash
+  mount -a
+```
