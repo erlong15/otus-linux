@@ -26,6 +26,7 @@ shutdown -r now
 # uname -r
 4.19.66
 
+Файл yum.log лежит в hw-1/yum.log
 
 # Инструкции
 
