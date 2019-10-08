@@ -39,3 +39,20 @@
 Правим spec файл и собираем RPM 
 
 	rpmbuild -bb rpmbuild/SPECS/nginx.spec
+
+Для создания локального репозитория:
+
+	cat >> /etc/yum.repos.d/otus.repo << EOF
+
+	[otus]
+	name=otus-linux
+	baseurl=http://localhost/repo
+	gpgcheck=0
+	enabled=1
+
+	EOF
+
+Для проверки можно использовать:
+
+	yum repolist enabled | grep otus
+	yum list | grep otus
