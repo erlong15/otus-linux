@@ -1,0 +1,20 @@
+[root@cnt dz7]# vgs
+
+VG #PV #LV #SN Attr VSize VFree
+VolGroup00 1 2 0 wz--n- <38.97g 0
+
+[root@cnt dz7]# vgrename VolGroup00 OtusLinux
+
+Volume group "VolGroup00" successfully renamed to "OtusLinux"
+
+[root@cnt dz7]# sed -i 's/centos/OtusLinux/' /etc/fstab
+[root@cnt dz7]# sed -i 's/centos/OtusLinux/g' /etc/default/grub
+[root@cnt dz7]# sed 's/centos/OtusLinux/g' /boot/grub2/grub.cfg -i
+
+[root@cnt dz7]# mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+
+[root@cnt dz7]# vgs
+
+VG #PV #LV #SN Attr VSize VFree
+
+OtusLinux 1 2 0 wz--n- <38.97g 0
