@@ -1,0 +1,3 @@
+[web]
+nginx ansible_host=127.0.0.1 ansible_port=2222  ansible_private_key_file=/root/linux-otus/dz9/ansible/.vagrant/machines/nginx/virtualbox/private_key
+
