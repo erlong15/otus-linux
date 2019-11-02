@@ -1,75 +1,54 @@
 # -*- mode: ruby -*-
-# vim: set ft=ruby :
-
+# vi: set ft=ruby :
 MACHINES = {
-  :otuslinux => {
-        :box_name => "centos/7",
-        :ip_addr => '192.168.11.101',
-	:disks => {
-		:sata1 => {
-			:dfile => './sata1.vdi',
-			:size => 250,
-			:port => 1
-		},
-		:sata2 => {
-                        :dfile => './sata2.vdi',
-                        :size => 250, # Megabytes
-			:port => 2
-		},
-                :sata3 => {
-                        :dfile => './sata3.vdi',
-                        :size => 250,
-                        :port => 3
-                },
-                :sata4 => {
-                        :dfile => './sata4.vdi',
-                        :size => 250, # Megabytes
-                        :port => 4
-                }
-
-	}
-
-		
-  },
+   # VM name "kernel-update"
+  :"CentoS-Elrepo" => {
+              # VM box
+              :box_name => "centos-7-5",
+              # VM CPU count
+              :cpus => 2,
+              # VM RAM size (Mb)
+              :memory => 768,
+              # networks
+              :net => [],
+              # forwarded ports
+              :forwarded_port => []
+            }
 }
-
 Vagrant.configure("2") do |config|
+    MACHINES.each do |boxname, boxconfig|
+    # Disable shared folders
+    config.vm.synced_folder ".", "/vagrant", disabled: false
 
-  MACHINES.each do |boxname, boxconfig|
+    config.vm.box = "centos-7-5"
 
-      config.vm.define boxname do |box|
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+   config.vm.synced_folder "./share", "/home/vagrant/share"
 
-          box.vm.box = boxconfig[:box_name]
-          box.vm.host_name = boxname.to_s
+  # Provider-specific configuration so you can fine-tune various
+  # backing providers for Vagrant. These expose provider-specific options.
+  # Example for VirtualBox:
+  #
+  # config.vm.provider "virtualbox" do |vb|
+  #   # Display the VirtualBox GUI when booting the machine
+  #   vb.gui = true
+  #
+  #   # Customize the amount of memory on the VM:
+  #   vb.memory = "1024"
+  # end
+  #
+  # View the documentation for the provider you are using for more
+  # information on available options.
 
-          #box.vm.network "forwarded_port", guest: 3260, host: 3260+offset
-
-          box.vm.network "private_network", ip: boxconfig[:ip_addr]
-
-          box.vm.provider :virtualbox do |vb|
-            	  vb.customize ["modifyvm", :id, "--memory", "1024"]
-                  needsController = false
-		  boxconfig[:disks].each do |dname, dconf|
-			  unless File.exist?(dconf[:dfile])
-				vb.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
-                                needsController =  true
-                          end
-
-		  end
-                  if needsController == true
-                     vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
-                     boxconfig[:disks].each do |dname, dconf|
-                         vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', dconf[:port], '--device', 0, '--type', 'hdd', '--medium', dconf[:dfile]]
-                     end
-                  end
-          end
- 	  box.vm.provision "shell", inline: <<-SHELL
-	      mkdir -p ~root/.ssh
-              cp ~vagrant/.ssh/auth* ~root/.ssh
-	      yum install -y mdadm smartmontools hdparm gdisk
-  	  SHELL
-
-      end
-  end
+  # Enable provisioning with a shell script. Additional provisioners such as
+  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
+  # documentation for more information about their specific syntax and use.
+  # config.vm.provision "shell", inline: <<-SHELL
+  #   apt-get update
+  #   apt-get install -y apache2
+  # SHELL
 end
-
+end
