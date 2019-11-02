@@ -2,6 +2,23 @@
 
 * скачан репозиторий manual_kernel_update
 
+* запустил VM с базовым Centos/7, провел обновление ядра вручную, используя следующие команды:
+
+ * подключение репозитория
+ ````
+  sudo yum install -y http:///www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+ ````
+ * установка последней версии ядра
+ ````
+ sudo yum --enablerepo elrepo-kernel install kernel-ml
+
+ ````
+ * обновил конфигурацию загрузчика и выбрал загрузку по умолчанию с новым ядром
+ ````
+ sudo grub2-mkconfig -o /boot/grub2/grub.cfg # 
+ sudo grub2-set -default 0
+  ````
+  
 * с помощью шаблона packer/centos.json создан файл-образ Centos-7.7.1908-kernel-5-x86_64-Minimal.box
 
   *  при создании этого образа были использованы bash скрипты, обновляющие ядро
@@ -29,11 +46,11 @@ vagrant init centos-7-5
 uname -r
 ````
 
-* ядро обновлено
+* ядро обновлено до весрии 5.3.8.1
 
 * первая версия vagrantfile скопирована в свой репозиторий ветка homework1, изначальные vagrantfile (откуда у меня их два??) скопированы в папку default_vagrantfiles
 
-* 
+* образ выгружен в Vagrant Cloud. Доступен по ссылке https://app.vagrantup.com/max89k/boxes/centos-7-5
 
 
 
