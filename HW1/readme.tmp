@@ -1,0 +1,83 @@
+Ручнаясборка ядра
+
+* запустил ВМ с Centos/7 (ядро 3.х)
+
+* обновил пакеты
+
+````
+sudo yum update -y
+
+* качаем исходники ядра
+````
+sudo yum install wget #установка wget,  изначально не стоял
+
+sudo wget https://git.kernel.org/torvalds/t/linux-5.4-rc5.tar.gz
+
+tar -xzvf linux-5.4-rc5.tar.gz #распаковалось в папку linux-5.4***
+````
+  * переименовал в kernel-source
+cd kernel-source
+````
+* копируем текущую конфигурацию из  /boot/config123 (два файла)
+````
+# mkdir .config2 
+# cp /boot/config*  .config # протупил, это один файл должен быть, а не директория
+
+cp /boot/config-3.10.0-... .config 
+````
+
+
+* команда make oldconfig,  это скрпит адаптации настроек
+````
+make oldconfig
+````
+    * ошибка, не установлен gcc, ставим
+
+```
+sudo yum install gcc
+```
+* еще раз запустим make, теперь ошибка - нет команды flex. Ставим через yum
+потом bison
+
+* затем make oldconfig выполнится
+  должен быть файл .config
+  отвечаем на вопросы:
+  получаем конфигуцрацию в .config файле 
+
+* сборка ядра - команда make
+
+  * падает с ошибкой  -нет команды bc
+
+   * yum install bc
+
+* ошибка - нет директории openssl/opebsslv.h 
+   установить - openssl-devel. Cделано. 
+
+    * Ошибка "error: Cannot generate ORC metadata for CONFIG_UNWINDER_ORC=y, please install libelf-dev, libelf-devel or elfutils-libelf-devel"
+причем намного раньше, чем с openssl
+
+ * ставим: 
+ ````
+libelf-dev already installed
+libelf-devel same
+
+
+# нашел параметр в конфиге - CONFIG_UNWINDER_ORC=y , поменял на n
+# не помогло, при выполнении меняется на yes
+# замена на # ... is not set - то же самое
+````
+
+* проблема решилась после установки elfutils-libelf-devel
+
+* процесс отвалился через ~60 минут из-за отсутствия perl 
+
+* запустил с клоючом --jobs 2 , не понятно, был ли эффект
+
+* после окончания компиляции, выполним команду  sudo ake install
+  * отвалилась с ошибками: 
+````
+error: ERROR: could not open directory /lib/modules/5.4.0-rc5: No such file or directory
+FATAL: could not search modules: No such file or directory
+Kernel version 5.4.0-rc5 has no module directory /lib/modules/5.4.0-rc5
+Failed to install module hv_netvsc
+  ````
