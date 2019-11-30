@@ -236,3 +236,22 @@ mdadm /dev/md0 --remove /dev/sde
 mdadm: set device faulty failed for /dev/sdd:  Device or resource busy
 mdadm: hot remove failed for /dev/sde: Device or resource busy
 ````
+
+
+## Отчет о домашней работе №3
+Работа проведена на ВМ 'lvm', директория HW3
+Что сделано:
+1. Уменьшен том под "/" до 8G
+2. Выделен том под /home
+3. Выделен том под /var - сделать в mirror
+4. Том для снэпшотов - /home 
+5. Прописано монтирование в fstab. 
+
+6. Работа со снапшотами:
+- сгенерить файлы в /home/
+- снять снапшот
+- удалить часть файлов
+- восстановится со снапшота
+
+Работа описана в файле HW3/hw3.md
+Ввод-вывод командной строки запротоколирован командой script , находится в HW3/script_log
