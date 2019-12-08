@@ -28,10 +28,12 @@ Vagrant.configure("2") do |config|
           box.vm.provision "shell", inline: <<-SHELL
             mkdir -p ~root/.ssh
             cp ~vagrant/.ssh/auth* ~root/.ssh
-            yum install -y epel-release spawn-fcgi php php-cli mod_fcgid httpd
+            yum install epel-release -y && yum install spawn-fcgi php php-cli mod_fcgid httpd -y
           SHELL
+          #config.vm.synced_folder "~/hw_linux/hw1/otus-linux/HW5", "/home/vagrant/upload/"
+          box.vm.provision "file", source: "files", destination: "/home/vagrant/"
 
-          box.vm.provision "shell", name: "test", privileged: true, path: "test.sh"
+          box.vm.provision "shell", name: "script1", privileged: true, path: "start.sh"
   
       end
   end

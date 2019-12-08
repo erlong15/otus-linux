@@ -1,0 +1,70 @@
+Script started on Sun 08 Dec 2019 20:13:45 UTC
+[root@otuslinux vagrant]# systemctl start watchlog.timer
+[root@otuslinux vagrant]# tail -f /var/log/messages
+Dec  8 20:10:50 localhost systemd-logind: Removed session 2.
+Dec  8 20:10:50 localhost systemd: Removed slice User Slice of vagrant.
+Dec  8 20:13:28 localhost systemd: Created slice User Slice of vagrant.
+Dec  8 20:13:28 localhost systemd: Started Session 4 of user vagrant.
+Dec  8 20:13:28 localhost systemd-logind: New session 4 of user vagrant.
+Dec  8 20:13:36 localhost su: (to root) vagrant on pts/0
+Dec  8 20:16:18 localhost systemd: Started Run watchlog script every 30 second.
+Dec  8 20:16:18 localhost systemd: Starting My watchlog service...
+Dec  8 20:16:18 localhost root: Sun Dec  8 20:16:18 UTC 2019: Keyword was found!
+Dec  8 20:16:18 localhost systemd: Started My watchlog service.
+Dec  8 20:16:48 localhost systemd: Starting My watchlog service...
+Dec  8 20:16:48 localhost root: Sun Dec  8 20:16:48 UTC 2019: Keyword was found!
+Dec  8 20:16:48 localhost systemd: Started My watchlog service.
+^C
+[root@otuslinux vagrant]# systemctl start spawn-fcgi.service 
+[root@otuslinux vagrant]# systemctl status spawn-fcgi.service 
+● spawn-fcgi.service - Spawn-fcgi startup service by Otus
+   Loaded: loaded (/etc/systemd/system/spawn-fcgi.service; disabled; vendor preset: disabled)
+   Active: active (running) since Sun 2019-12-08 20:17:24 UTC; 5s ago
+ Main PID: 6476 (php-cgi)
+   CGroup: /system.slice/spawn-fcgi.service
+           ├─6476 /usr/bin/php-cgi
+           ├─6477 /usr/bin/php-cgi
+           ├─6478 /usr/bin/php-cgi
+           ├─6479 /usr/bin/php-cgi
+           ├─6480 /usr/bin/php-cgi
+           ├─6481 /usr/bin/php-cgi
+           ├─6482 /usr/bin/php-cgi
+           ├─6483 /usr/bin/php-cgi
+           ├─6484 /usr/bin/php-cgi
+           ├─6485 /usr/bin/php-cgi
+           ├─6486 /usr/bin/php-cgi
+           ├─6487 /usr/bin/php-cgi
+           ├─6488 /usr/bin/php-cgi
+           ├─6489 /usr/bin/php-cgi
+           ├─6490 /usr/bin/php-cgi
+           ├─6491 /usr/bin/php-cgi
+           ├─6492 /usr/bin/php-cgi
+           ├─6493 /usr/bin/php-cgi
+           ├─6494 /usr/bin/php-cgi
+           ├─6495 /usr/bin/php-cgi
+           ├─6496 /usr/bin/php-cgi
+           ├─6497 /usr/bin/php-cgi
+           ├─6498 /usr/bin/php-cgi
+           ├─6499 /usr/bin/php-cgi
+           ├─6500 /usr/bin/php-cgi
+           ├─6501 /usr/bin/php-cgi
+           ├─6502 /usr/bin/php-cgi
+           ├─6503 /usr/bin/php-cgi
+           ├─6504 /usr/bin/php-cgi
+           ├─6505 /usr/bin/php-cgi
+           ├─6506 /usr/bin/php-cgi
+           ├─6507 /usr/bin/php-cgi
+           └─6508 /usr/bin/php-cgi
+
+Dec 08 20:17:24 otuslinux systemd[1]: Started Spawn-fcgi startup service by Otus.
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@otuslinux vagrant]# start httpd@first
+bash: start: command not found
+[root@otuslinux vagrant]# systemctl start httpd@first
+[root@otuslinux vagrant]# systemctl start httpd@second
+[root@otuslinux vagrant]# ss -tnulp | grep httpd
+tcp    LISTEN     0      128      :::8080                 :::*                   users:(("httpd",pid=6540,fd=4),("httpd",pid=6539,fd=4),("httpd",pid=6538,fd=4),(httpd",pid=6537,fd=4),("httpd",pid=6536,fd=4),("httpd",pid=6535,fd=4),("httpd",pid=6534,fd=4))
+tcp    LISTEN     0      128      :::80                   :::*                   users:(("httpd",pid=6527,fd=4),("httpd",pid=6526,fd=4),("httpd",pid=6525,fd=4),(httpd",pid=6524,fd=4),("httpd",pid=6523,fd=4),("httpd",pid=6522,fd=4),("httpd",pid=6521,fd=4))
+[root@otuslinux vagrant]# exit
+
+Script done on Sun 08 Dec 2019 20:18:42 UTC
