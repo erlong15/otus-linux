@@ -450,3 +450,63 @@ Skipping udev rule: 91-permissions.rules
 test
 [root@hw4vm vagrant]# nano /boot/grub2/grub.cfg 
 [root@hw4vm vagrant]# exit
+
+
+# part 3
+
+Script started on Wed 04 Dec 2019 09:03:52 UTC
+[root@otuslinux system]# nano /etc/systemd/system/httpd.service
+[root@otuslinux system]# nano /etc/sysconfig/httpd-first
+[root@otuslinux system]# nano /etc/sysconfig/httpd-second
+[root@otuslinux system]# cd /etc/httpd/conf
+[root@otuslinux conf]# ls
+httpd.conf  magic
+[root@otuslinux conf]# cat httpd.conf
+#
+# This is the main Apache HTTP server configuration file.  It contains the
+...
+[root@otuslinux conf]# mv httpd.conf first.conf
+[root@otuslinux conf]# cp first.conf second.conf
+[root@otuslinux conf]# ls
+first.conf  magic  second.conf
+[root@otuslinux conf]# nano second.conf
+[root@otuslinux conf]# systemctl start httpd@first
+Failed to start httpd@first.service: Unit not found.
+[root@otuslinux conf]# systemctl start httpd@second
+Failed to start httpd@second.service: Unit not found.
+[root@otuslinux conf]# exit
+
+Script done on Wed 04 Dec 2019 09:28:48 UTC
+
+Script started on Wed 04 Dec 2019 09:35:11 UTC
+[root@otuslinux system]# systemctl start httpd@first
+[root@otuslinux system]# systemctl start httpd@second
+[root@otuslinux system]# systemctl status httpd@second
+● httpd@second.service - The Apache HTTP Server
+   Loaded: loaded (/etc/systemd/system/httpd@second.service; disabled; vendor preset: disabled)
+   Active: active (running) since Wed 2019-12-04 09:33:38 UTC; 2min 3s ago
+     Docs: man:httpd(8)
+           man:apachectl(8)
+ Main PID: 24042 (httpd)
+   Status: "Total requests: 0; Current requests/sec: 0; Current traffic:   0 B/sec"
+   CGroup: /system.slice/system-httpd.slice/httpd@second.service
+           ├─24042 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           ├─24043 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           ├─24044 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           ├─24045 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           ├─24046 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           ├─24047 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+           └─24048 /usr/sbin/httpd -f conf/second.conf -DFOREGROUND
+
+Dec 04 09:33:38 otuslinux systemd[1]: Starting The Apache HTTP Server...
+Dec 04 09:33:38 otuslinux httpd[24042]: AH00558: httpd: Could not reliably determine the server's fully qualified domain name, using 127.0.0.1. Set the 'ServerName' directive globa... this message
+Dec 04 09:33:38 otuslinux systemd[1]: Started The Apache HTTP Server.
+Hint: Some lines were ellipsized, use -l to show in full.
+[root@otuslinux system]# ss -tnulp | grep httpd
+tcp    LISTEN     0      128      :::8080                 :::*                   users:(("httpd",pid=24048,fd=4),("httpd",pid=24047,fd=4),("httpd",pid=24046,fd=4),("httpd",pid=24045,fd=4),("httpd"
+,pid=24044,fd=4),("httpd",pid=24043,fd=4),("httpd",pid=24042,fd=4))
+tcp    LISTEN     0      128      :::80                   :::*                   users:(("httpd",pid=24035,fd=4),("httpd",pid=24034,fd=4),("httpd",pid=24033,fd=4),("httpd",pid=24032,fd=4),("httpd",pid=24031,fd=4),("httpd",pid=24030,fd=4),("httpd",pid=24029,fd=4))
+[root@otuslinux system]# exit
+
+Script done on Wed 04 Dec 2019 09:35:56 UTC
+[root@otuslinux system]# 
