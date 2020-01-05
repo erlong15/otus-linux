@@ -1,0 +1,6 @@
+otus:
+     hosts:
+          hweserver
+     vars: 
+         ansible_host=10.10.10.10
+         

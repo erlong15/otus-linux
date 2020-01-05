@@ -1,0 +1,42 @@
+---
+- name: nginx_start
+  hosts: hwserver
+  become: true
+  vars:
+    nginx_listen_port: 8080
+
+
+  tasks: 
+    - name: repo_update
+      yum:
+        name: epel-release
+        state: latest
+    
+    - name: nginx_install
+      yum: 
+        name: nginx
+        state: latest
+      notify: 
+        - nginx_restart
+    
+    - name: nginx_config
+      template: 
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify: 
+        - nginx_reload
+    
+  handlers:
+    - name: nginx_restart
+      systemd: 
+        name: nginx
+        state: restarted
+        enabled: yes
+    
+    - name: nginx_reload
+      systemd: 
+        name: nginx
+        state: reloaded
+
+
+

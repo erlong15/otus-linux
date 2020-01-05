@@ -1,0 +1,29 @@
+Vagrant.configure("2") do |config|
+
+  config.vm.provider :virtualbox do |v|
+    v.memory = 1024
+  end
+
+  config.vm.define "hwserver" do |hw|
+    hw.vm.box = "centos/7"
+    hw.vm.hostname = "hwserver"
+    hw.vm.network :private_network, ip: "10.10.10.10"
+    hw.vm.network "forwarded_port", guest: 8080, host: 8080
+
+    hw.vm.provision "shell", inline: <<-SHELL
+           mkdir -p ~root/.ssh; cp ~vagrant/.ssh/auth* ~root/.ssh
+         # sudo yum update -y
+    SHELL
+
+    hw.vm.provision "ansible" do |ansible|
+      ansible.playbook = "nginx_start.yml"
+    end
+  
+  #config.vm.define "appserver" do |app|
+  #  app.vm.box = "ubuntu/1604lts"
+  #  app.vm.hostname = "appserver"
+  #  app.vm.network :private_network, ip: "10.10.10.20"
+  # end
+  end
+end
+
