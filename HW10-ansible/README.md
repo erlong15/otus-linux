@@ -12,6 +12,8 @@
 
 * vagrantfile запускает ВМ hwserver с Centos/7, IP 10.10.10.10
 
+* ansible стоит на хостовой машине (ubuntu18), управляем ВМ на centos
+
 * создан inventory файл, группа хостов - otus, имя- hwserver 
 
 * создан  ansible.cfg, в котором указан путь к inventory.ini, путь к ssh ключам и пр. 
