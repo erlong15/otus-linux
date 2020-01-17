@@ -1,0 +1,15 @@
+list files jobid=13
++----------+
+| Filename |
++----------+
+| /etc/systemd/system/multi-user.target.wants/ |
+| /etc/systemd/system/multi-user.target.wants/bacula-fd.service |
+| /etc/tuned/active_profile |
+| /etc/tuned/profile_mode |
++----------+
++-------+---------+---------------------+------+-------+----------+----------+-----------+
+| JobId | Name    | StartTime           | Type | Level | JobFiles | JobBytes | JobStatus |
++-------+---------+---------------------+------+-------+----------+----------+-----------+
+|    13 | Client1 | 2019-08-07 11:45:02 | B    | I     |        4 |       35 | T         |
++-------+---------+---------------------+------+-------+----------+----------+-----------+
+
