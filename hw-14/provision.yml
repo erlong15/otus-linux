@@ -1,0 +1,13 @@
+---
+- hosts: webserver
+  become: yes
+  roles:
+   - webserver
+
+- hosts: elk1 
+  become: yes
+  roles:
+   - elk1
+   
+   
+...

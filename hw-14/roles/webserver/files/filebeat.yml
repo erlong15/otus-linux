@@ -1,0 +1,40 @@
+filebeat.inputs:
+- type: log
+  enabled: false
+  paths:
+    - /var/log/*.log
+    
+- type: log
+  enabled: true
+  paths:
+      - /var/log/nginx/*-access.log
+  fields:
+    type: nginx_access
+  fields_under_root: true
+  scan_frequency: 5s
+
+- type: log
+  enabled: true
+  paths:
+      - /var/log/nginx/*-error.log
+  fields:
+    type: nginx_error
+  fields_under_root: true
+  scan_frequency: 5s
+  
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: false
+  
+setup.template.settings:
+  index.number_of_shards: 3
+  
+setup.kibana:
+  
+output.logstash:
+  hosts: ["elk1:5044"]
+  
+xpack.monitoring:
+  enabled: true
+  elasticsearch:
+    hosts: ["http://elk1:9200"]

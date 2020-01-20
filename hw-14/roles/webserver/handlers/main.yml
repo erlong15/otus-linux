@@ -1,0 +1,13 @@
+---
+- name: Enable and start logging & audit services 
+  service:
+    name: "{{ item }}"
+    state: restarted
+    enabled: yes
+    daemon_reload: yes
+  with_items:
+    - filebeat
+    - nginx
+    - auditd
+    
+...

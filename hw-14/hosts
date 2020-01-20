@@ -1,0 +1,8 @@
+[webserver]
+webserver ansible_ssh_host=127.0.0.1 ansible_port=2203
+
+[elk1]
+elk1 ansible_ssh_host=127.0.0.1 ansible_port=2202
+
+[elk2]
+elk2 ansible_ssh_host=127.0.0.1 ansible_port=2202

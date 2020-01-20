@@ -1,0 +1,53 @@
+---
+- name: Install base packages
+  yum:
+    name:
+      - epel-release
+      - wget
+      - curl
+    state: installed
+
+- name: Add ELK repo
+  yum_repository:
+    file: ELK
+    name: elasticsearch-6.x
+    description: Elasticsearch repository for 6.x packages
+    baseurl: https://artifacts.elastic.co/packages/6.x/yum
+    gpgcheck: yes
+    gpgkey: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    enabled: yes
+
+- name: Import ELK repo key
+  rpm_key:
+    state: present
+    key: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+- name: Install ELK & Nginx
+  yum:
+    name:
+      - audit
+      - java-1.8.0-openjdk 
+      - filebeat
+      - nginx
+    state: installed
+    
+- name: Enable modules filebeat 
+  command:
+      filebeat modules enable nginx system auditd
+    
+- name: Prepare configs for logging & audit services
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - { src: 'filebeat.yml', dest: '/etc/filebeat/filebeat.yml', group: root, mode: '0600' }
+    - { src: 'hosts', dest: '/etc/hosts', group: root, mode: '0644'  }
+    - { src: 'nginx.rules', dest: '/etc/audit/rules.d/nginx.rules', group: root, mode: '0600'  }
+    - { src: 'auditd.service', dest: '/usr/lib/systemd/system/auditd.service', group: root, mode: '0644'  }
+  notify:
+    - Enable and start logging & audit services
+    
+...
