@@ -8,7 +8,7 @@ DISKS_ARRY=""
 for i in $(lsblk -p | grep 250M | awk '{print $1}'); do DISKS_ARRY="$DISKS_ARRY $i" ; done
 
 echo "$DISKS_ARRY"
-mdadm --ze  ro-superblock --force $DISKS_ARRY
+mdadm --zero-superblock --force $DISKS_ARRY
 echo "$DISKS_ARRY"
 mdadm --create --verbose /dev/md0 -l 10 -n 6 $DISKS_ARRY
 echo "$DISKS_ARRY"

@@ -18,3 +18,46 @@
 cd lesson_2
 vagrant up
 ```
+
+## Описание работы поломки/восстановления
+
+* Проверяем что рейд работает
+
+```bash
+cat /proc/mdstat
+mdadm -D /dev/md0
+lsblk
+```
+
+* Вызываем сбой диска
+
+```bash
+mdadm /dev/md0 --fail /dev/sdf
+```
+
+* Смотрим Что диск отключился
+
+```bash
+cat /proc/mdstat
+mdadm -D /dev/md0
+```
+
+* Удфляем сбойный диск
+
+```bash
+mdadm /dev/md0 --remove /dev/sdf
+```
+
+* Добавляем новыйдиск в рейд
+
+```bash
+mdadm --zero-superblock --force /dev/sdh
+mdadm /dev/md0 --add /dev/sdh
+```
+
+* Проверяем
+
+```bash
+cat /proc/mdstat
+mdadm -D /dev/md0
+```
