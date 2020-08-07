@@ -5,4 +5,7 @@
 
 ## otus-linux
 
-Используйте этот [Vagrantfile](Vagrantfile) - для тестового стенда.
+### Домашняя работа
+
+* [Домашняя работа №1](lesson_1/README.md)
+* [Домашняя работа №2](lesson_2/README.md)
