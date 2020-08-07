@@ -1,0 +1,191 @@
+Script started on 2020-08-07 16:18:55+03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="155" LINES="28"]
+]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/lesson_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/lesson_2[00m$ vagrant ssh
+]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ cat /proc/mdstat
+Personalities : [raid10] 
+md0 : active raid10 sdg[5] sdf[4] sde[3] sdd[2] sdc[1] sdb[0]
+      761856 blocks super 1.2 512K chunks 2 near-copies [6/6] [UUUUUU]
+      
+unused devices: <none>
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$  mdadm -D /dev/md0
+mdadm: must be super-user to perform this action
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$  mdadm -D /dev/md0[Ksudo su
+]0;root@otuslinux:/home/vagrant[?1034h[root@otuslinux vagrant]#  mdadm -D /dev/md0[1P
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Aug  7 13:18:05 2020
+        Raid Level : raid10
+        Array Size : 761856 (744.00 MiB 780.14 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 6
+     Total Devices : 6
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Aug  7 13:18:40 2020
+             State : clean 
+    Active Devices : 6
+   Working Devices : 6
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux:0  (local to host otuslinux)
+              UUID : 48daaf17:1b9e1f39:5cb1684b:70d3077d
+            Events : 30
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync set-A   /dev/sdb
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+       4       8       80        4      active sync set-A   /dev/sdf
+       5       8       96        5      active sync set-B   /dev/sdg
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# lsblk 
+NAME      MAJ:MIN RM   SIZE RO TYPE   MOUNTPOINT
+sda         8:0    0    40G  0 disk   
+`-sda1      8:1    0    40G  0 part   /
+sdb         8:16   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sdc         8:32   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sdd         8:48   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sde         8:64   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sdf         8:80   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sdg         8:96   0   250M  0 disk   
+`-md0       9:0    0   744M  0 raid10 
+  |-md0p1 259:0    0   147M  0 md     /raid/part1
+  |-md0p2 259:1    0 112.5M  0 md     /raid/part2
+  |-md0p3 259:2    0 148.5M  0 md     /raid/part3
+  |-md0p4 259:3    0 238.5M  0 md     /raid/part4
+  `-md0p5 259:4    0  94.5M  0 md     /raid/part5
+sdh         8:112  0   300M  0 disk   
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm /dev/md0 --fail /dev/sde f
+mdadm: set /dev/sdf faulty in /dev/md0
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm /dev/md0 --fail /dev/sdf
+[root@otuslinux vagrant]# lsblk [Kmdadm -D /dev/md0[11Plsblk mdadm /dev/md0 --fail /dev/sdf
+[root@otuslinux vagrant]# [Kcat /proc/mdstat
+Personalities : [raid10] 
+md0 : active raid10 sdg[5] sdf[4](F) sde[3] sdd[2] sdc[1] sdb[0]
+      761856 blocks super 1.2 512K chunks 2 near-copies [6/5] [UUUU_U]
+      
+unused devices: <none>
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Aug  7 13:18:05 2020
+        Raid Level : raid10
+        Array Size : 761856 (744.00 MiB 780.14 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 6
+     Total Devices : 6
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Aug  7 13:20:47 2020
+             State : clean, degraded 
+    Active Devices : 5
+   Working Devices : 5
+    Failed Devices : 1
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux:0  (local to host otuslinux)
+              UUID : 48daaf17:1b9e1f39:5cb1684b:70d3077d
+            Events : 32
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync set-A   /dev/sdb
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+       -       0        0        4      removed
+       5       8       96        5      active sync set-B   /dev/sdg
+
+       4       8       80        -      faulty   /dev/sdf
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm /dev/md0 --remove /dev/sdf 
+mdadm: hot removed /dev/sdf from /dev/md0
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm /dev/md0 --remove /dev/sdf [1P[1P[1P[1P[1P[1P[1@a[1@d[1@d /dev/sdf   h
+mdadm: added /dev/sdh
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# cat /proc/mdstat
+Personalities : [raid10] 
+md0 : active raid10 sdh[6] sdg[5] sde[3] sdd[2] sdc[1] sdb[0]
+      761856 blocks super 1.2 512K chunks 2 near-copies [6/6] [UUUUUU]
+      
+unused devices: <none>
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# mdadm -D /dev/md0
+/dev/md0:
+           Version : 1.2
+     Creation Time : Fri Aug  7 13:18:05 2020
+        Raid Level : raid10
+        Array Size : 761856 (744.00 MiB 780.14 MB)
+     Used Dev Size : 253952 (248.00 MiB 260.05 MB)
+      Raid Devices : 6
+     Total Devices : 6
+       Persistence : Superblock is persistent
+
+       Update Time : Fri Aug  7 13:22:20 2020
+             State : clean 
+    Active Devices : 6
+   Working Devices : 6
+    Failed Devices : 0
+     Spare Devices : 0
+
+            Layout : near=2
+        Chunk Size : 512K
+
+Consistency Policy : resync
+
+              Name : otuslinux:0  (local to host otuslinux)
+              UUID : 48daaf17:1b9e1f39:5cb1684b:70d3077d
+            Events : 52
+
+    Number   Major   Minor   RaidDevice State
+       0       8       16        0      active sync set-A   /dev/sdb
+       1       8       32        1      active sync set-B   /dev/sdc
+       2       8       48        2      active sync set-A   /dev/sdd
+       3       8       64        3      active sync set-B   /dev/sde
+       6       8      112        4      active sync set-A   /dev/sdh
+       5       8       96        5      active sync set-B   /dev/sdg
+]0;root@otuslinux:/home/vagrant[root@otuslinux vagrant]# exit
+exit
+]0;vagrant@otuslinux:~[vagrant@otuslinux ~]$ exit
+logout
+Connection to 127.0.0.1 closed.
+
+]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/lesson_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/lesson_2[00m$ exit
+
+Script done on 2020-08-07 16:23:08+03:00 [COMMAND_EXIT_CODE="0"]
