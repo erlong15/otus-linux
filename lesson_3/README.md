@@ -133,3 +133,10 @@ echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fst
 echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
 
 ```
+
+## BTRFS
+
+```bash
+sudo mkfs.btrfs /dev/sdb /dev/sdc
+sudo mount /dev/sdb /opt
+```
