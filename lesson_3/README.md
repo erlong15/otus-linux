@@ -8,6 +8,11 @@
 script --timing=timing_script rec_script
 ```
 
+Результат записи в файлах:
+
+- Временные метки:  [timing_script](./timing_script)
+- Запись терминала:  [rec_script](./rec_script)
+
 ### уменьшить том под / до 8G
 
 на имеющемся образе  
