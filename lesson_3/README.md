@@ -43,8 +43,7 @@ for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
 chroot /mnt/
 grub2-mkconfig -o /boot/grub2/grub.cfg
 cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;s/.img//g"` --force; done
-exit
-reboot
+
 
 ```
 
@@ -65,6 +64,7 @@ mount /dev/vg_var/lv_var /mnt
 rsync -avHPSAX /var/ /mnt/
 mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
 echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+cat /etc/fstab
 exit
 reboot
 ```
@@ -82,12 +82,14 @@ pvremove /dev/sdb
 
 ```bash
 lvcreate -n LogVol_Home -L 2G /dev/VolGroup00
+mkfs.xfs /dev/VolGroup00/LogVol_Home
 mount /dev/VolGroup00/LogVol_Home /mnt/
 cp -aR /home/* /mnt/
 rm -rf /home/*
 umount /mnt
 mount /dev/VolGroup00/LogVol_Home /home/
 echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
+cat /etc/fstab 
 ```
 
 ### /home - сделать том для снэпшотов
