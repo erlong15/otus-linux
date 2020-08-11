@@ -137,6 +137,9 @@ echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fst
 ## BTRFS
 
 ```bash
-sudo mkfs.btrfs /dev/sdb /dev/sdc
-sudo mount /dev/sdb /opt
+sudo su
+mkfs.btrfs /dev/sdb /dev/sdc
+mount /dev/sdb /opt
+echo "`blkid | grep sdb | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
+
 ```
