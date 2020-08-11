@@ -2,7 +2,11 @@
 
 ## Домашнее заданее
 
-запись работы с помошью программы ```script --timing=timing_script rec_script```
+запись работы с помошью программы
+
+```bash
+script --timing=timing_script rec_script
+```
 
 ### уменьшить том под / до 8G
 
@@ -39,14 +43,8 @@ for i in /proc/ /sys/ /dev/ /run/ /boot/; do mount --bind $i /mnt/$i; done
 chroot /mnt/
 grub2-mkconfig -o /boot/grub2/grub.cfg
 cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;s/.img//g"` --force; done
-
-```
-
-```bash
+exit
 reboot
-lvremove /dev/vg_root/lv_root
-vgremove /dev/vg_root
-pvremove /dev/sdb
 
 ```
 
@@ -62,9 +60,22 @@ lvcreate -L 950M -m1 -n lv_var vg_var
 
 ```bash
 mkfs.ext4 /dev/vg_var/lv_var
+umount /mnt
 mount /dev/vg_var/lv_var /mnt
+rsync -avHPSAX /var/ /mnt/
 mkdir /tmp/oldvar && mv /var/* /tmp/oldvar
 echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fstab
+exit
+reboot
+```
+
+### Чистим диск после переноса
+
+```bash
+lvremove /dev/vg_root/lv_root
+vgremove /dev/vg_root
+pvremove /dev/sdb
+
 ```
 
 ### выделить том под /home
