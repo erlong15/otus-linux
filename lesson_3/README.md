@@ -44,7 +44,6 @@ chroot /mnt/
 grub2-mkconfig -o /boot/grub2/grub.cfg
 cd /boot ; for i in `ls initramfs-*img`; do dracut -v $i `echo $i|sed "s/initramfs-//g;s/.img//g"` --force; done
 
-
 ```
 
 ### /var - сделать в mirror
@@ -89,15 +88,34 @@ rm -rf /home/*
 umount /mnt
 mount /dev/VolGroup00/LogVol_Home /home/
 echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
-cat /etc/fstab 
+cat /etc/fstab
 ```
 
 ### /home - сделать том для снэпшотов
 
+#### попробовать с разными опциями и разными файловыми системами ( на выбор)
+
+- сгенерить файлы в /home/
+
 ```bash
 touch /home/file{1..20}
+```
+
+- снять снэпшот
+
+```bash
 lvcreate -L 100MB -s -n home_snap /dev/VolGroup00/LogVol_Home
+```
+
+- удалить часть файлов
+
+```bash
 rm -f /home/file{11..20}
+```
+
+- восстановится со снэпшота
+
+```bash
 umount /home
 lvconvert --merge /dev/VolGroup00/home_snap
 mount /home
@@ -110,11 +128,3 @@ echo "`blkid | grep var: | awk '{print $2}'` /var ext4 defaults 0 0" >> /etc/fst
 echo "`blkid | grep Home | awk '{print $2}'` /home xfs defaults 0 0" >> /etc/fstab
 
 ```
-
-### попробовать с разными опциями и разными файловыми системами ( на выбор)
-
-- сгенерить файлы в /home/
-- снять снэпшот
-- удалить часть файлов
-- восстановится со снэпшота
-- залоггировать работу можно с помощью утилиты script
