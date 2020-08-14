@@ -10,3 +10,4 @@
 * [Домашняя работа №1 (kernel)](lesson_1/README.md)
 * [Домашняя работа №2 (mdman)](lesson_2/README.md)
 * [Домашняя работа №3 (LVM)](lesson_3/README.md)
+* [Домашняя работа №4 (NFS)](lesson_4/README.md)

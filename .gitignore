@@ -1,2 +1,4 @@
 .vagrant
 *.vdi
+venv
+.vscode

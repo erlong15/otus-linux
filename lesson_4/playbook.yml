@@ -1,0 +1,82 @@
+---
+- hosts: nfsserver
+  become: yes
+  tasks:
+  - name: yum installed.
+    yum: 
+      name: "{{ item }}"
+      state: present
+    loop: 
+      - nfs-utils
+      - ntp
+
+  - name: running services.
+    service: 
+      name: "{{ item }}"
+      state: started 
+      enabled: yes
+    loop:
+      - firewalld
+      - ntpd
+      - rpcbind
+      - nfs-server
+      - nfs-mountd
+      - nfs-lock
+      - nfs-rquotad
+      - nfs-idmapd
+
+  - name: create dir nfs
+    file:
+      path: "{{ item }}" 
+      state: directory
+      recurse: yes
+      mode: '0777'
+    loop: 
+      - /mnt/nfs
+      - /mnt/nfs/uploads
+
+  - name:
+    template:
+      src: ./exports.j2
+      dest: /etc/exports
+    notify: reload nfs
+
+  - name: firewalld
+    firewalld:
+      zone: public
+      port: "{{ item }}"
+      permanent: yes
+      state: enabled
+      immediate: "true"
+    loop:
+      - 111/udp
+      - 2049/udp
+      - 20048/udp
+      - 111/tcp
+      - 2049/tcp
+      - 20048/tcp
+
+  handlers:
+    - name: reload nfs
+      command: 'exportfs -ra'
+
+- hosts: nfsclient
+  become: yes
+  vars:
+    nfs_path: /mnt/nfs-server
+  tasks:
+    - name: yum installed.
+      yum: 
+        name: "{{ item }}"
+        state: present
+      loop: 
+        - nfs-utils
+        - ntp
+
+    - name: Mount nfs
+      mount:
+        fstype: nfs
+        path: "{{ nfs_path }}"
+        opts: "vers=3,rsize=8192,wsize=8192,timeo=14,intr,proto=udp"
+        src: "192.168.50.10:/mnt/nfs"
+        state: "mounted"
