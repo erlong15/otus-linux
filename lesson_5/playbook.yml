@@ -1,0 +1,128 @@
+---
+- hosts: rpm_server
+  become: yes
+  tasks:
+  - name: yum installed.
+    yum: 
+      name: 
+        - redhat-lsb-core 
+        - wget 
+        - rpmdevtools 
+        - rpm-build 
+        - createrepo
+        - yum-utils
+        - gcc
+        - geoip-devel
+        - tree
+        - docker
+        - python-docker
+      state: present
+
+  - name: dowanload nginx
+    get_url:
+      url: "{{ item }}"
+      dest: /tmp
+      mode: '0755'
+    loop:
+      - https://www.openssl.org/source/openssl-1.1.1g.tar.gz
+      - https://nginx.org/packages/centos/7/SRPMS/nginx-1.18.0-1.el7.ngx.src.rpm
+  
+  - name: install rpm nginx
+    command: rpm -i /tmp/nginx-1.18.0-1.el7.ngx.src.rpm
+
+  - name: Extract openssl
+    unarchive:
+      src: /tmp/openssl-1.1.1g.tar.gz
+      dest: /root/
+      remote_src: yes
+
+
+  - name: config spec nginx
+    template:
+      src: template/nginx/nginx.spec
+      dest: /root/rpmbuild/SPECS/nginx.spec
+  - name: config spec 2 nginx
+    template:
+      src: template/nginx/nginx.service
+      dest: /root/rpmbuild/SOURCES/nginx.service
+  - name: config spec 3 nginx
+    template:
+      src: template/nginx/nginx.conf
+      dest: /root/rpmbuild/SOURCES/nginx.conf
+
+  - name: download 
+    command: yum-builddep -y /root/rpmbuild/SPECS/nginx.spec
+
+
+  # - name: build
+  #   command: rpmbuild -bb /root/rpmbuild/SPECS/nginx.spec
+
+  - name: install nginx
+    yum: 
+      name: /root/rpmbuild/RPMS/x86_64/nginx-1.18.0-1.el7.ngx.x86_64.rpm
+      state: present
+
+  - name: enable nginx
+    systemd:
+      name: nginx
+      state: started
+      enabled: yes
+
+  - name: folder
+    file:
+      path: /usr/share/nginx/html/repo
+      state: directory
+      recurse: yes
+
+  - name: copy
+    copy:
+      src: /root/rpmbuild/RPMS/x86_64/nginx-1.18.0-1.el7.ngx.x86_64.rpm
+      dest: /usr/share/nginx/html/repo/nginx-1.18.0-1.el7.ngx.x86_64.rpm
+      mode: '0755'
+      remote_src: yes
+
+  - name: dowanload percona
+    get_url:
+      url: "https://www.percona.com/redir/downloads/percona-release/redhat/0.1-6/percona-release-0.1-6.noarch.rpm"
+      dest: /usr/share/nginx/html/repo/percona-release-0.1-6.noarch.rpm
+      mode: '0755'
+
+  - name: repo
+    command: createrepo /usr/share/nginx/html/repo/
+
+  - name: config nginx
+    template:
+      src: template/nginx/default.conf
+      dest: /etc/nginx/conf.d/default.conf
+    notify: reload nginx
+
+  - name: add repo
+    template:
+      src: template/yum/otus.repo
+      dest: /etc/yum.repos.d/otus.repo
+      mode: '0644'
+  
+  - name: yum installed.
+    yum: 
+      name: percona-release
+      disablerepo: "*"
+      enablerepo: "otus"
+      state: present
+
+  - name: copy dockerfile
+    template:
+      src: Dockerfile
+      dest: /root/Dockerfile
+  - name: build docker images
+    docker_image:
+      name: iudanet/nginx-otus
+      tag: v1
+      build:
+        path: /root
+      source: build
+
+  handlers:
+    - name: reload nginx
+      systemd:
+        name: nginx
+        state: reloaded
