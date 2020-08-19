@@ -26,7 +26,7 @@ vagrant up
 
 ## Задание со звездочкой
 
-Собранный RPM покет лежит в docker hub п адресу ```iudanet/nginx-otus:v1```
+Собранный RPM покет упакован в Docker лежит в Docker hub с именем ```iudanet/nginx-otus:v1```
 
 пример запуска
 
