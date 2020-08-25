@@ -91,7 +91,89 @@ mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
 
 ![vgroot](img/vgroot_1.png)
 
-* Перезагружаемся и проверяем
+* Перезагружаемся и проверяем  
 ![vgroot](img/vgroot_2.png)
 
 ## 3. Добавить модуль в initrd
+
+* Создаем папку
+
+```bash
+ mkdir /usr/lib/dracut/modules.d/01test
+```
+
+* Добавляем файлы модуей
+
+```bash
+cat << EOF > /usr/lib/dracut/modules.d/01test/module-setup.sh
+#!/bin/bash
+
+check() {
+    return 0
+}
+
+depends() {
+    return 0
+}
+
+install() {
+    inst_hook cleanup 00 "${moddir}/test.sh"
+}
+EOF
+```
+
+```bash
+cat << EOF > /usr/lib/dracut/modules.d/01test/test.sh
+#!/bin/bash
+
+exec 0<>/dev/console 1<>/dev/console 2<>/dev/console
+cat <<'msgend'
+Hello! You are in dracut module!
+ ___________________
+< I'm dracut module >
+ -------------------
+   \
+    \
+        .--.
+       |o_o |
+       |:_/ |
+      //   \ \
+     (|     | )
+    /'\_   _/`\
+    \___)=(___/
+msgend
+sleep 10
+echo " continuing...."
+EOF
+
+```
+
+* Даем права на исполнение
+
+```bash
+chmod +x /usr/lib/dracut/modules.d/01test/*.sh
+
+```
+
+* пересобираем initrd
+
+```bash
+mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+```
+
+* Проверяем что модуль добавился
+
+```bash
+lsinitrd -m /boot/initramfs-$(uname -r).img | grep test
+test
+```
+
+* Правим загрузчик
+
+```bash
+sed -i 's/quiet//g' /boot/grub2/grub.cfg
+sed -i 's/rhgb//g' /boot/grub2/grub.cfg
+```
+
+* перезагружамся и проверяем  
+![module](img/module.png)

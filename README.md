@@ -12,3 +12,4 @@
 * [Домашняя работа №3 (LVM)](lesson_3/README.md)
 * [Домашняя работа №4 (NFS)](lesson_4/README.md)
 * [Домашняя работа №5 (RPM)](lesson_5/README.md)
+* [Домашняя работа №6 (Загрузка Linux)](lesson_6/README.md)
