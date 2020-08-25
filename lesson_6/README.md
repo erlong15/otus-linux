@@ -61,4 +61,37 @@ ___Операции происходят на установке Centos8 minimal
 
 ## 2. Установить систему с LVM, после чего переименовать VG
 
+Используем Centos7 minimal
+
+* Смотрим имя LVM группы
+
+```bash
+vgs
+```
+
+* Переименовываем группу
+
+```bash
+vgrename centos OtusRoot
+```
+
+* переименовываем группу в конфигах
+
+```bash
+sed -i 's/centos/OtusRoot/g' /etc/fstab
+sed -i 's/centos/OtusRoot/g' /etc/default/grub
+sed -i 's/centos/OtusRoot/g' /boot/grub2/grub.cfg
+```
+
+* Пересоздаем initramfs
+
+```bash
+mkinitrd -f -v /boot/initramfs-$(uname -r).img $(uname -r)
+```
+
+![vgroot](img/vgroot_1.png)
+
+* Перезагружаемся и проверяем
+![vgroot](img/vgroot_2.png)
+
 ## 3. Добавить модуль в initrd
