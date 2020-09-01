@@ -13,3 +13,6 @@
 * [Домашняя работа №4 (NFS)](lesson_4/README.md)
 * [Домашняя работа №5 (RPM)](lesson_5/README.md)
 * [Домашняя работа №6 (Загрузка Linux)](lesson_6/README.md)
+* [Домашняя работа №7 (Bash)](lesson_7/README.md)
+* [Домашняя работа №8 (ZFS)](lesson_8/README.md)
+* [Домашняя работа №9 (Процессы Linux)](lesson_9/README.md)
