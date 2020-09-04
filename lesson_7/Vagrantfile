@@ -1,0 +1,21 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 1000
+    v.cpus = 3
+  end
+
+  config.vm.define "bash" do |bash|
+    bash.vm.network "private_network", ip: "192.168.50.10", virtualbox__intnet: "net1"
+    bash.vm.hostname = "bash"
+    bash.vm.provision "shell", path: "bootstrap_vm.sh"
+
+  end
+
+
+end
