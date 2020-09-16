@@ -24,10 +24,6 @@ get_proces_status_name () {
     test -f /proc/$1/status  &&  cat /proc/$1/status | grep "^Name:" | awk '{print $2}'
 }
 
-get_tty() {
-    echo 1
-}
-
 get_stat() {
     test -f  /proc/$1/stat &&  awk '{print $3}'   /proc/$1/stat
 }
