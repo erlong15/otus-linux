@@ -2,3 +2,4 @@
 *.vdi
 venv
 .vscode
+collection

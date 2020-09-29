@@ -1,0 +1,117 @@
+---
+  - hosts: systemd
+    become: true
+    # roles:
+    #   - name: nginx
+    gather_facts: False
+    pre_tasks:
+    - name: Install python for Ansible
+      raw: test -e /usr/bin/python3 || (yum install -y python3)
+      changed_when: False
+    - name: get facts
+      setup: # aka gather_facts
+    tasks:
+      - name: Disable SELinux
+        ansible.posix.selinux:
+          state: disabled
+
+      - name: template service  watchlog
+        template:
+          src: "{{ item.src }}"
+          dest: "{{ item.dest }}"
+          mode: "{{ item.mode }}"
+        loop:
+          - src: ../template/watchlog.log
+            dest: /var/log/watchlog.log
+            mode: "0644"
+          - src: ../template/watchlog.j2
+            dest: "/etc/sysconfig/watchlog"
+            mode: "0644"
+          - src: ../template/watchlog.sh.j2
+            dest: "/opt/watchlog.sh"
+            mode: "0777"
+          - src: ../template/watchlog.service.j2
+            dest: "/etc/systemd/system/watchlog.service"
+            mode: "0644"
+          - src: ../template/watchlog.timer.j2
+            dest: "/etc/systemd/system/watchlog.timer"
+            mode: "0644"
+        notify:
+          - systemd daemon-relad
+      - name: run timer service
+        systemd:
+          name: watchlog.timer
+          state: started
+          enabled: True
+          daemon_reload: yes
+
+
+      - name: install epel
+        yum:
+          name: epel-release
+          state: present
+
+      - name: install epel
+        yum:
+          name: "{{ item }}"
+          state: present
+        loop:
+          - spawn-fcgi 
+          - php
+          - php-cli
+          - mod_fcgid
+          - httpd
+  
+      - name: template service spawn-fcgi
+        template:
+          src: "{{ item.src }}"
+          dest: "{{ item.dest }}"
+          mode: "{{ item.mode }}"
+        loop:
+          - src: ../template/spawn-fcgi
+            dest: /etc/sysconfig/spawn-fcgi
+            mode: "0644"
+          - src: ../template/spawn-fcgi.service
+            dest: /etc/systemd/system/spawn-fcgi.service
+            mode: "0644"
+        notify:
+          - systemd daemon-relad
+
+      - name: run timer service spawn-fcgi
+        systemd:
+          name: spawn-fcgi.service
+          state: started
+          enabled: True
+          daemon_reload: yes
+
+      - name: template service httpd
+        template:
+          src: ../template/httpd.conf.j2
+          dest: /etc/httpd/conf/{{ item.name }}.conf
+        loop: "{{ httpd_name_conf }}"
+
+      - name: template config httpd
+        template:
+          src: ../template/httpd.j2
+          dest: /etc/sysconfig/httpd-{{ item.name }}.conf
+        loop: "{{ httpd_name_conf }}"
+
+      - name: template services httpd
+        template:
+          src: ../template/httpd.service
+          dest: /etc/systemd/system/httpd.service
+        # loop: "{{ httpd_name_conf }}"        
+        # /usr/lib/systemd/system/httpd.service;
+
+      - name: run timer service httpd
+        systemd:
+          name: "httpd@{{item.name}}"
+          state: started
+          enabled: True
+          daemon_reload: yes
+        loop: "{{ httpd_name_conf }}"
+    handlers:
+      - name: systemd daemon-relad
+        systemd:
+          daemon_reload: yes
+          

@@ -1,0 +1,20 @@
+all:
+  hosts:
+    vagrant_1:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 127.0.0.1
+      ansible_ssh_port: 2222
+      ansible_ssh_user: vagrant
+      ansible_ssh_private_key_file: ./.vagrant/machines/nginx/virtualbox/private_key
+      ansible_python_interpreter: /usr/bin/python3
+
+systemd:
+  hosts:
+    vagrant_1:
+  vars:
+    httpd_name_conf: 
+      - name: "second"
+        port: "8811"
+      - name: "first"
+        port: "8877"
+
