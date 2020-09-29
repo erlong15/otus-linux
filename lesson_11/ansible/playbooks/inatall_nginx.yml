@@ -1,0 +1,38 @@
+---
+  - hosts: nginx
+    become: true
+    tasks:
+    - name: Add epel-release repo
+      yum:
+        name: epel-release
+        state: present
+  
+    - name: Install nginx
+      yum:
+        name: nginx
+        state: present
+      notify:
+        - start nginx
+
+    - name: config nginx
+      template:
+        src: nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      notify:
+        - reload nginx
+    - name: enable systemd nginx
+      systemd:
+        name: nginx
+        state: started
+        enabled: True
+
+    handlers:
+      - name: start nginx
+        systemd:
+          name: nginx
+          state: started
+          enabled: True
+      - name: reload nginx
+        systemd:
+          name: nginx
+          state: reloaded

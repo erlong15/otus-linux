@@ -32,3 +32,11 @@ pip inatsll -r requirements.txt
 ```bash
 ansible-galaxy init roles/nginx
 ```
+
+Запуск стенда
+
+```bash
+vagrant up
+ansible -v -i inventory/vagrant.yml -m ping all
+ansible-playbook -i inventory/vagrant.yml playbooks/inatall_nginx.yml
+```
