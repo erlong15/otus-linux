@@ -16,3 +16,6 @@
 * [Домашняя работа №7 (Bash)](lesson_7/README.md)
 * [Домашняя работа №8 (ZFS)](lesson_8/README.md)
 * [Домашняя работа №9 (Процессы Linux)](lesson_9/README.md)
+* [Домашняя работа №10 (Systemd)](lesson_10/README.md)
+* [Домашняя работа №11 (Ansible)](lesson_11/README.md)
+* [Домашняя работа №12 (PAM)](lesson_12/README.md)
