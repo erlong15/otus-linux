@@ -1,0 +1,12 @@
+all:
+  hosts:
+    vagrant_1:
+      ansible_hostname:
+  vars:
+
+
+nginx:
+  hosts:
+    vagrant_1:
+  vars:
+    foo: bar
