@@ -1,15 +1,6 @@
 ---
   - hosts: systemd
     become: true
-    # roles:
-    #   - name: nginx
-    gather_facts: False
-    pre_tasks:
-    - name: Install python for Ansible
-      raw: test -e /usr/bin/python3 || (yum install -y python3)
-      changed_when: False
-    - name: get facts
-      setup: # aka gather_facts
     tasks:
       - name: Disable SELinux
         ansible.posix.selinux:
@@ -93,15 +84,13 @@
       - name: template config httpd
         template:
           src: ../template/httpd.j2
-          dest: /etc/sysconfig/httpd-{{ item.name }}.conf
+          dest: /etc/sysconfig/httpd-{{ item.name }}
         loop: "{{ httpd_name_conf }}"
 
       - name: template services httpd
         template:
           src: ../template/httpd.service
-          dest: /etc/systemd/system/httpd.service
-        # loop: "{{ httpd_name_conf }}"        
-        # /usr/lib/systemd/system/httpd.service;
+          dest: /etc/systemd/system/httpd@.service
 
       - name: run timer service httpd
         systemd:

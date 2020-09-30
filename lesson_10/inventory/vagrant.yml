@@ -6,7 +6,7 @@ all:
       ansible_ssh_port: 2222
       ansible_ssh_user: vagrant
       ansible_ssh_private_key_file: ./.vagrant/machines/nginx/virtualbox/private_key
-      ansible_python_interpreter: /usr/bin/python3
+      # ansible_python_interpreter: /usr/bin/python3
 
 systemd:
   hosts:
