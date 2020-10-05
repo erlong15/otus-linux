@@ -1,0 +1,43 @@
+---
+  - hosts: pam
+    become: true
+    handlers:
+      - name: restart ssh
+        systemd:
+          name: sshd
+          state: restarted
+    tasks:
+      - name: adduser
+        user:
+          name: "{{ item.name }}"
+          shell: /bin/bash
+          password: "{{ item.pass  }}"
+          update_password: on_create
+          state: present
+          createhome: yes
+          groups: "{{ item.group }}"
+        loop: "{{ users }}"
+
+      - name: config sshd
+        template:
+          src: ../template/sshd_config
+          dest: /etc/ssh/sshd_config
+        notify:
+          - restart ssh
+      - name: config time pam
+        template:
+          src: ../template/test_admin.sh
+          dest: /usr/local/bin/test_login.sh
+          mode: 0777
+
+      - name: pam
+        community.general.pamd:
+          name: sshd
+          type: account
+          control: required
+          module_path: pam_nologin.so
+          new_type: account
+          new_control: required
+          new_module_path: pam_exec.so
+          module_arguments: /usr/local/bin/test_login.sh
+          state: after
