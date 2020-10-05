@@ -32,5 +32,5 @@ ansible-playbook -i inventory/vagrant.yml playbooks/inatall_pam.yml
 
 * На стенде присутствует 4 ползователя: ```admin,user1,user2,vagrant```
 * user2 не в группе admin
-* при логине по ssh модуль pam_exec.so запускает [баш скрипт](../template/test_admin.sh)
+* при логине по ssh модуль pam_exec.so запускает [баш скрипт](template/test_admin.sh)
 * На основе присутствия в группе admin а затем по номеру текущего дня недели происходит решение о входе в систему.
