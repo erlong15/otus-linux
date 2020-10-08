@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provision "ansible" do |ansible|
+    #ansible.verbose = "vvv"
+    ansible.playbook = "provisioning/playbook.yml"
+    ansible.become = "true"
+  end
+
+  config.vm.provider "virtualbox" do |v|
+	  v.memory = 256
+  end
+
+
+
+  config.vm.define "nginx01" do |nginx01|
+    nginx01.vm.network "private_network", ip: "192.168.50.15", virtualbox__intnet: "dns"
+    nginx01.vm.hostname = "nginx01"
+  end
+
+  config.vm.define "nginx02" do |nginx02|
+    nginx02.vm.network "private_network", ip: "192.168.50.16", virtualbox__intnet: "dns"
+    nginx02.vm.hostname = "nginx02"
+  end
+  config.vm.define "nginx03" do |nginx03|
+    nginx03.vm.network "private_network", ip: "192.168.50.17", virtualbox__intnet: "dns"
+    nginx03.vm.hostname = "nginx03"
+  end
+end

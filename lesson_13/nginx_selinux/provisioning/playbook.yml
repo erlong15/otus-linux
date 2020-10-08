@@ -1,0 +1,65 @@
+---
+- hosts: all
+  name: install se utils
+  become: true
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: install packages
+      yum:
+        name: "{{ packages }}"
+        state: present
+
+- hosts: nginx01
+  vars_files:
+    - vars.yml
+  name: setsebool config
+  become: true
+  tasks:
+    - name: setsebool config
+      command: setsebool -P nis_enabled 1
+
+- hosts: nginx02
+  vars_files:
+    - vars.yml
+  name: semanage port config
+  become: true
+  tasks:
+    - name: semanage port config
+      command: "semanage port -a -t http_port_t -p tcp {{ nginx_port }}"
+
+
+- hosts: nginx03
+  name: generate module
+  become: true
+  tasks:
+  - name: copy httpd_t.te
+    copy:
+      src: files/httpd_t.te
+      dest: /tmp/httpd_t.te
+      owner: root
+      group: root
+      mode: 0600
+
+  - name: checkmodule
+    command: "checkmodule -M -m -o /tmp/httpd_t.mod /tmp/httpd_t.te"
+  - name: semodule_package
+    command: semodule_package -o /tmp/httpd_t.pp -m /tmp/httpd_t.mod
+  - name: semodule
+    command: semodule -i /tmp/httpd_t.pp
+- hosts: all
+  vars_files:
+    - vars.yml
+  name: install nginx
+  become: true
+  roles:
+    - provisioning/roles/nginx
+
+        # audit2allow -M httpd_t --debug  < /var/log/audit/audit.log
+        # checkmodule -M -m -o myapp.mod myapp.te
+        # semodule_package -o myapp.pp -m myapp.mod
+        # semodule -i myapp.pp
+
+
+        # 
+        # semanage port -a -t http_port_t -p tcp 12345

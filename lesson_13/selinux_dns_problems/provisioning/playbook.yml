@@ -1,0 +1,147 @@
+---
+- hosts: all # part running on all hosts
+  become: true
+  tasks:
+  - name: install packages # переведём синтаксис yum из deprecated 
+    yum:
+      name: "{{ packages }}"
+      state: present
+    vars:
+      packages:
+      - bind
+      - bind-utils
+      - ntp
+      - policycoreutils-python
+      - setools
+      - setroubleshoot-server
+
+- hosts: ns01 # server ns01 provision
+  become: true
+  tasks:
+  - name: set new context named
+    command: semanage fcontext -a -t named_zone_t "/etc/named(/.*)?"
+  - name: restore context
+    command: restorecon -R /etc/named
+
+  - name: copy named.conf
+    copy:
+      src: files/ns01/named.conf
+      dest: /etc/named.conf
+      owner: root
+      group: named
+      mode: 0640
+
+  - name: copy master zone dns.lab
+    copy:
+      src: "{{ item }}"
+      dest: /etc/named/
+      owner: root
+      group: named
+      mode: 0660
+    with_fileglob:
+      - files/ns01/named.dns*
+
+  - name: copy dynamic zone ddns.lab
+    copy:
+      src: files/ns01/named.ddns.lab
+      dest: /etc/named/dynamic/
+      owner: named
+      group: named
+      mode: 0660
+
+  - name: copy dynamic zone ddns.lab.view1
+    copy:
+      src: files/ns01/named.ddns.lab.view1
+      dest: /etc/named/dynamic/
+      owner: named
+      group: named
+      mode: 0660
+
+  - name: copy master zone newdns.lab
+    copy:
+      src: files/ns01/named.newdns.lab
+      dest: /etc/named/
+      owner: root
+      group: named
+      mode: 0660
+
+  - name: copy rev zones
+    copy:
+      src: files/ns01/named.50.168.192.rev
+      dest: /etc/named/
+      owner: root
+      group: named
+      mode: 0660
+
+  - name: copy resolv.conf to server
+    copy:
+      src: files/ns01/resolv.conf
+      dest: /etc/resolv.conf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy transferkey to server
+    copy:
+      src: files/named.zonetransfer.key.special
+      dest: /etc/named.zonetransfer.key
+      owner: root
+      group: named
+      mode: 0644
+
+  - name: set /etc/named permissions
+    file:
+      path: /etc/named
+      owner: root
+      group: named
+      mode: 0670
+
+  - name: set /etc/named/dynamic permissions
+    file:
+      path: /etc/named/dynamic
+      owner: root
+      group: named
+      mode: 0670
+
+  - name: ensure named is running and enabled
+    systemd:
+      name: named
+      state: restarted
+      enabled: yes
+
+- hosts: client # first client provision
+  become: true
+  tasks:
+  - name: copy resolv.conf to the client
+    copy:
+      src: files/client/resolv.conf
+      dest: /etc/resolv.conf
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy rndc conf file
+    copy:
+      src: files/client/rndc.conf
+      dest: /home/vagrant/rndc.conf
+      owner: vagrant
+      group: vagrant
+      mode: 0644
+
+  - name: copy motd to the client
+    copy:
+      src: files/client/motd
+      dest: /etc/motd
+      owner: root
+      group: root
+      mode: 0644
+
+  - name: copy transferkey to client
+    copy:
+      src: files/named.zonetransfer.key.special
+      dest: /etc/named.zonetransfer.key
+      owner: root
+      group: named
+      mode: 0644
+
+

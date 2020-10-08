@@ -1,0 +1,6 @@
+---
+nginx_port: 5199
+packages:
+  - policycoreutils-python
+  - setools
+  - setroubleshoot-server
