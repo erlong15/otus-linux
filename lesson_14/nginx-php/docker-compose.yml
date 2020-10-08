@@ -1,0 +1,11 @@
+---
+version: "2.4"
+services:
+  nginx:
+    build: ./nginx
+    ports:
+     - 8085:80
+    depends_on:
+      - php-fpm
+  php-fpm:
+    build: ./php
