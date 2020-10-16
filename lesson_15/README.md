@@ -38,8 +38,9 @@ ansible-galaxy install -r requirements.yml -f
 ### Запуск Стенда
 
 ```bash
+vagrant up
 ansible -i inventory/vagrant.yml -m ping all
-ansible-playbook -i inventory/vagrant.yml  playbooks/inatall_monitoring.yml
+ansible-playbook -i inventory/vagrant.yml  playbooks/install_monitoring.yml
 ```
 
 ### Описание работы
