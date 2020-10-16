@@ -47,8 +47,8 @@ ansible-playbook -i inventory/vagrant.yml  playbooks/install_monitoring.yml
 
 * После запуска двух виртуальных машин и установки окружения с помощью Ansible. Будут доступный следующие ресурсы
 
-1. [Grafana](http://192.168.50.10:3000/)
-1. [Prometheus](http://192.168.50.10:9090/) (Логин: ```otus``` Пароль: ```otus2020```)
+1. [Grafana](http://192.168.50.10:3000/) (Логин: ```otus``` Пароль: ```otus2020```)
+1. [Prometheus](http://192.168.50.10:9090/)
 
 * В Grafana автоматически создается дашборд
 * ![img](./dashboards/dash.jpg)
