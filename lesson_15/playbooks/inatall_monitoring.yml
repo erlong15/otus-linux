@@ -1,0 +1,14 @@
+---
+- hosts: prometheus
+  become: true
+  roles:
+  - role: cloudalchemy.prometheus
+
+- hosts: node
+  become: true
+  roles:
+    - role: UnderGreen.prometheus-node-exporter
+
+- hosts: grafana
+  roles:
+    - role: cloudalchemy.grafana

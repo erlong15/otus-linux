@@ -1,0 +1,32 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+#  config.vm.provision "ansible" do |ansible|
+# #    ansible.verbose = "vvv"
+#    ansible.playbook = "playbook.yml"
+#    ansible.become = "true"
+#    ansible.groups = {
+#       "nginx_server" => ["nginx"]
+#     }
+#    ansible.raw_arguments = ['--diff']
+#  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 256
+    v.cpus = 1
+  end
+
+  config.vm.define "prom" do |prom|
+    prom.vm.network "private_network", ip: "192.168.50.10"
+    
+    prom.vm.hostname = "prom"
+  end
+  config.vm.define "node1" do |node1|
+    node1.vm.network "private_network", ip: "192.168.50.20"
+    node1.vm.hostname = "node1"
+  end
+
+end

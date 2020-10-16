@@ -1,0 +1,13 @@
+---
+roles:
+  # Install a role from Ansible Galaxy.
+  - name: UnderGreen.prometheus-node-exporter
+    version: v1.4.0
+
+  - name: UnderGreen.prometheus-exporters-common
+    version: v1.2.0
+
+  - name: cloudalchemy.prometheus
+    version: 2.16.0
+  - name: cloudalchemy.grafana
+    version: 0.18.0

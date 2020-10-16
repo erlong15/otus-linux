@@ -1,0 +1,47 @@
+---
+all:
+  hosts:
+    prom:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 192.168.50.10
+      ansible_ssh_port: 22
+      ansible_ssh_user: vagrant
+      ansible_ssh_private_key_file: ./.vagrant/machines/prom/virtualbox/private_key
+      # ansible_python_interpreter: /usr/bin/python3
+    node1:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 192.168.50.20
+      ansible_ssh_port: 22
+      ansible_ssh_user: vagrant
+      ansible_ssh_private_key_file: ./.vagrant/machines/node1/virtualbox/private_key
+      # ansible_python_interpreter: /usr/bin/python3
+
+node:
+  hosts:
+    prom:
+    node1:
+grafana:
+  hosts:
+    prom:
+  vars:
+    grafana_dashboards_dir: ../dashboards
+    grafana_security:
+      admin_user: otus
+      admin_password: otus2020
+    grafana_datasources:
+      - name: prometheus
+        type: prometheus
+        access: proxy
+        url: 'http://127.0.0.1:9090'
+        basicAuth: false
+prometheus:
+  hosts:
+    prom:
+  vars:
+    prometheus_targets:
+      node:
+        - targets:
+            - 192.168.50.10:9100
+            - 192.168.50.20:9100
+          labels:
+            env: otus
