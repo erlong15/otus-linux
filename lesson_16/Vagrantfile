@@ -1,0 +1,39 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+#  config.vm.provision "ansible" do |ansible|
+# #    ansible.verbose = "vvv"
+#    ansible.playbook = "playbook.yml"
+#    ansible.become = "true"
+#    ansible.groups = {
+#       "nginx_server" => ["nginx"]
+#     }
+#    ansible.raw_arguments = ['--diff']
+#  end
+
+  config.vm.provider "virtualbox" do |v|
+    v.memory = 256
+    v.cpus = 1
+  end
+
+  config.vm.define "nginx" do |nginx|
+    nginx.vm.network "private_network", ip: "192.168.50.10"
+    
+    nginx.vm.hostname = "nginx"
+  end
+  config.vm.define "syslog" do |syslog|
+    syslog.vm.network "private_network", ip: "192.168.50.20"
+    syslog.vm.hostname = "syslog"
+  end
+  config.vm.define "elk" do |elk|
+    elk.vm.network "private_network", ip: "192.168.50.30"
+    elk.vm.hostname = "elk"
+    elk.vm.provider "virtualbox" do |vb|
+      vb.memory = 4024
+      vb.cpus = 2
+    end
+  end
+end

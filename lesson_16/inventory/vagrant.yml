@@ -1,0 +1,35 @@
+---
+all:
+  hosts:
+    nginx:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 192.168.50.10
+      ansible_ssh_private_key_file: ./.vagrant/machines/nginx/virtualbox/private_key
+    syslog:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 192.168.50.20
+      ansible_ssh_private_key_file: ./.vagrant/machines/syslog/virtualbox/private_key
+    elk:
+      ansible_host: "{{ ansible_ssh_host }}"
+      ansible_ssh_host: 192.168.50.30
+      ansible_ssh_private_key_file: ./.vagrant/machines/elk/virtualbox/private_key
+  vars:
+    ansible_ssh_port: 22
+    ansible_ssh_user: vagrant
+    syslog_server: "{{ hostvars['syslog']['ansible_host'] }}"
+    syslog_port: "514"
+web_servers:
+  hosts:
+    nginx:
+rsyslog_server:
+  hosts:
+    syslog:
+
+rsyslog_clients:
+  hosts:
+    nginx:
+    elk:
+
+elk_server:
+  hosts:
+    elk:
