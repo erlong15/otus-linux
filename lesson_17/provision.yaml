@@ -1,0 +1,134 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+    - name: yum install 
+      yum:
+        name:
+          - fping
+          - libselinux-python
+          - mtr
+          - tcpdump
+
+- hosts: routers
+  become: true
+  handlers:
+    - name: restart network
+      systemd:
+        name: NetworkManager
+        state: restarted
+
+  tasks:
+    - name: yum install
+      yum:
+        name:
+          - tmux
+          - NetworkManager-config-routing-rules
+    - name: start and enable NetworkManager-dispatcher
+      systemd:
+        name: NetworkManager-dispatcher
+        state: started
+        enabled: true
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+    - name: config lineinfile 
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile | default([])}}"
+      when: lineinfile | default('', false)
+      notify:
+        - restart network
+
+
+- hosts: inetRouter
+  become: true
+  handlers:
+    - name: save iptables
+      community.general.iptables_state:
+        state: saved
+        path: /etc/sysconfig/iptables
+    - name: restart sysvi
+      sysvinit:
+        name: network
+        state: restarted
+        
+  tasks:
+    # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: 'eth0'
+        source: '0.0.0.0/0'
+        destination: '!192.168.0.0/16'
+        jump: MASQUERADE
+        protocol: 'all'
+        comment: Ansible NAT Masquerade
+      notify:
+        - save iptables
+    - name: config lineinfile systemV
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile }}"
+      notify: 
+        - restart sysvi
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+
+- hosts: servers
+  handlers:
+    - name: restart network
+      systemd:
+        name: NetworkManager
+        state: restarted
+  become: true
+  tasks:
+    - name: yum install
+      yum:
+        name:
+          - tmux
+          - NetworkManager-config-routing-rules
+    - name: start and enable NetworkManager-dispatcher
+      systemd:
+        name: NetworkManager-dispatcher
+        state: started
+        enabled: true
+    - name: config lineinfile 
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile | default([])}}"
+      when: lineinfile | default('', false)
+      notify:
+        - restart network
+
+
+- hosts: all
+  become: true
+  tasks:
+    - name: restart network
+      sysvinit:
+        name: network
+        state: restarted

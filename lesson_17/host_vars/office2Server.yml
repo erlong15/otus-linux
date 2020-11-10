@@ -1,0 +1,42 @@
+---
+  ip_gateway: "192.168.1.1"
+  
+  lineinfile:
+    # - name: eth0
+    - path: '/etc/sysconfig/network-scripts/ifcfg-eth0'
+      regexp: '^DEFROUTE='
+      line: 'DEFROUTE=no'
+    # - name: eth1
+    - path: '/etc/sysconfig/network-scripts/ifcfg-eth1'
+      regexp: '^GATEWAY='
+      line: 'GATEWAY={{ ip_gateway }}'
+  
+    - path: "/etc/sysconfig/network-scripts/route-eth1"
+      line: "default via 192.168.1.1"
+      regexp: "^default via"
+    # - name: eth2
+    - path: "/etc/iproute2/rt_tables"
+      line: "200 eth2"
+      regexp: "^200"
+    - path: "/etc/sysconfig/network-scripts/route-eth2"
+      line: "192.168.1.128/26 dev eth2 table eth2"
+      regexp: "^192.168.1.128/26"
+    - path: "/etc/sysconfig/network-scripts/route-eth2"
+      line: "default via 192.168.1.129 dev eth2 table eth2"
+      regexp: "^default via"
+    - path: "/etc/sysconfig/network-scripts/rule-eth2"
+      line: "from 192.168.1.128/26 lookup eth2"
+      regexp: "^from 192.168.1.128/26"
+    # - name: eth3
+    - path: "/etc/iproute2/rt_tables"
+      line: "201 eth3"
+      regexp: "^201"
+    - path: "/etc/sysconfig/network-scripts/route-eth3"
+      line: "192.168.1.192/26 dev eth3 table eth3"
+      regexp: "^192.168.1.192/26"
+    - path: "/etc/sysconfig/network-scripts/route-eth3"
+      line: "default via 192.168.1.193 dev eth3 table eth3"
+      regexp: "^default via"
+    - path: "/etc/sysconfig/network-scripts/rule-eth3"
+      line: "from 192.168.1.192/26 lookup eth3"
+      regexp: "^from 192.168.1.192/26 "
