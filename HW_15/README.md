@@ -27,7 +27,7 @@
 ### Установка ansible
 
 ```bash
-cd lesson_15
+cd HW_15
 python3 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip

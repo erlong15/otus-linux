@@ -31,7 +31,7 @@
 ### Запуск Стенда
 
 ```bash
-cd lesson_16
+cd HW_16
 python3.8 -m venv venv
 source venv/bin/activate
 pip install --upgrade pip

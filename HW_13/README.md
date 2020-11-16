@@ -78,7 +78,7 @@ https://github.com/mbfx/otus-linux-adm/tree/master/selinux_dns_problems
 Все способы реализованы на стенде из 3 виртуальных машин (на каждый способ по машине), для запуска стенда:
 
 ```bash
-cd lesson_13/nginx_selinux
+cd HW_13/nginx_selinux
 vagran up
 ```
 
@@ -87,7 +87,7 @@ vagran up
 * Развернуть приложенный стенд
 
     ```bash
-    cd lesson_13/selinux_dns_problems
+    cd HW_13/selinux_dns_problems
     vagran up
     ```
 

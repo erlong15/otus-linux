@@ -22,7 +22,7 @@
 * Создать образ Nginx
 
     ```bash
-    cd lesson_14/nginx
+    cd HW_14/nginx
     docker build -t iudanet/nginx-otus:0.1 -t iudanet/nginx-otus:latesat .
     docker login -u iudanet
     docker push iudanet/nginx-otus:latesat
@@ -36,7 +36,7 @@
 * Создайте кастомные образы nginx и php, объедините их в docker-compose
 
 ```bash
-cd lesson_14/nginx-php
+cd HW_14/nginx-php
 docker-compose build
 docker-compose up -d
 curl 127.0.0.1:8085

@@ -12,6 +12,6 @@
 Запуск:
 
 ```bash
-cd lesson_1
+cd HW_1
 vagrant up
 ```

@@ -1,5 +1,5 @@
 Script started on 2020-08-07 16:18:55+03:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="155" LINES="28"]
-]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/lesson_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/lesson_2[00m$ vagrant ssh
+]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/HW_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/HW_2[00m$ vagrant ssh
 ]0;vagrant@otuslinux:~[?1034h[vagrant@otuslinux ~]$ cat /proc/mdstat
 Personalities : [raid10] 
 md0 : active raid10 sdg[5] sdf[4] sde[3] sdd[2] sdc[1] sdb[0]
@@ -186,6 +186,6 @@ exit
 logout
 Connection to 127.0.0.1 closed.
 
-]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/lesson_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/lesson_2[00m$ exit
+]0;otus@otus-linux-ubuntu: ~/ssd/git/otus/otus-linux/HW_2[01;32motus@otus-linux-ubuntu[00m:[01;34m~/ssd/git/otus/otus-linux/HW_2[00m$ exit
 
 Script done on 2020-08-07 16:23:08+03:00 [COMMAND_EXIT_CODE="0"]
