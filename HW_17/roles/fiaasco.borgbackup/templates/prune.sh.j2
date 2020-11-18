@@ -1,0 +1,36 @@
+#!{{ borgbackup_shell }}
+{{ ansible_managed | comment }}
+
+{% macro repository(b, h) %}
+{% if b.type == 'hetzner'%}
+ssh://{{ b.user }}@{{ b.fqdn }}:23/./{{ b.home }}{{ b.pool }}/{{ h }}
+{%- else %}
+{{ b.user }}@{{ b.fqdn }}:{{ b.home }}{{ b.pool }}/{{ h }}
+{%- endif %}
+{% endmacro -%}
+
+# This script is intended to run on a trusted management station
+# to purge borg repos in append-only mode.
+# Don't put it on the backup server, it contains all borg secrets!
+
+{% for h in groups['all'] %}
+{%     if hostvars[h].borgbackup_required | default(True) and inventory_hostname == hostvars[h].borgbackup_management_station %}
+# Host: {{ h }}
+export BORG_PASSPHRASE="{{ hostvars[h].borgbackup_passphrase }}"
+
+{%         for b in hostvars[h].borgbackup_servers %}
+echo "Pruning old backups of {{ h }} on {{ b.fqdn }} :"
+REPOSITORY="{{ repository(b, h) }}"
+{{ borgbackup_binary }} prune -v $REPOSITORY {{ b.options }}{{
+    " -H " ~ hostvars[h].borgbackup_retention.hourly ~
+    " -d " ~ hostvars[h].borgbackup_retention.daily ~
+    " -w " ~ hostvars[h].borgbackup_retention.weekly ~
+    " -m " ~ hostvars[h].borgbackup_retention.monthly ~
+    " -y " ~ hostvars[h].borgbackup_retention.yearly
+}}
+
+{%         endfor %}
+{%     endif %}
+{% endfor %}
+
+unset BORG_PASSPHRASE

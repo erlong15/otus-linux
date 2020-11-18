@@ -1,0 +1,56 @@
+---
+- name: management | put management station prune script
+  template:
+    src: prune.sh.j2
+    dest: "~{{ borgbackup_management_user }}/prune.sh"
+    owner: "{{ borgbackup_management_user }}"
+    mode: 0700
+
+- name: management | put management sshpubkey on the normal backupserver
+  authorized_key:
+    user: "{{ item.user }}"
+    key: "{{ borgbackup_management_ssh_pubkey }}"
+  delegate_to: "{{ item.fqdn }}"
+  when: item.type == 'normal'
+  with_items: "{{ borgbackup_servers }}"
+
+- when: item.type in ['rsync.net','hetzner']
+  block:
+    # rsync.net and hetzner have no python, so we can only use raw to manage ssh keys - workaround with local tmp file
+    - name: management | get authorized_keys file
+      raw: scp {{ item.user }}@{{ item.fqdn }}:.ssh/authorized_keys /tmp/authkeys-{{ item.type }}-{{ item.fqdn }}-authkeys
+      delegate_to: localhost
+      become: false
+      with_items: "{{ borgbackup_servers }}"
+      changed_when: false
+      tags:
+        - skip_ansible_lint
+
+    - name: management | modify local rsync.net/hetzner authorized_keys
+      authorized_key:
+        user: "{{ ansible_user_id }}"
+        key: "{{ borgbackup_management_ssh_pubkey }}"
+        path: "/tmp/authkeys-{{ item.type }}-{{ item.fqdn }}-authkeys"
+        manage_dir: false
+      delegate_to: localhost
+      become: false
+      with_items: "{{ borgbackup_servers }}"
+      register: authkeys
+
+    - name: management | upload local authorized_keys to rsync.net / hetzner
+      raw: scp /tmp/authkeys-{{ item.type }}-{{ item.fqdn }}-authkeys {{ item.user }}@{{ item.fqdn }}:.ssh/authorized_keys
+      delegate_to: localhost
+      become: false
+      when: authkeys.changed
+      with_items: "{{ borgbackup_servers }}"
+
+- name: management | remove tmp authorized_keys files
+  file:
+    path: /tmp/authkeys-{{ item.type }}-{{ item.fqdn }}-authkeys
+    state: absent
+  delegate_to: localhost
+  become: false
+  with_items: "{{ borgbackup_servers }}"
+  changed_when: false
+  tags:
+    - skip_ansible_lint

@@ -1,0 +1,41 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+second_disk = "./sata-1.vmdk"
+
+Vagrant.configure(2) do |config|
+  config.vm.box = "centos/7"
+
+  config.vm.provision "ansible" do |ansible|
+    ansible.verbose = "v"
+    ansible.playbook = "provision.yml"
+    ansible.become = "true"
+    ansible.groups = {
+        "borgbackup_client" => ["client"],
+        "borgbackup_servers" => ["server"]
+      }
+    ansible.raw_arguments = ['--diff']
+  end
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+  config.vm.define "server" do |server| 
+    server.vm.network "private_network", ip: "192.168.50.10"
+    server.vm.hostname = "server"
+    
+    server.vm.provider "virtualbox" do |vb|
+      unless File.exist?(second_disk)
+        vb.customize ['createhd', '--filename', second_disk, '--size', 2 * 1024]
+      end
+      vb.memory = 256
+      vb.cpus = 1
+      vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+      vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', 1, '--device', 0, '--type', 'hdd', '--medium', second_disk]
+    end
+  end
+  config.vm.define "client" do |client|
+    client.vm.network "private_network", ip: "192.168.50.20"
+    client.vm.hostname = "client"
+    client.vm.provider "virtualbox" do |v|
+      v.memory = 256
+      v.cpus = 1
+    end
+  end
+end

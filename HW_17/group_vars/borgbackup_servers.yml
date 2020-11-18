@@ -1,0 +1,25 @@
+---
+borgbackup_client_user: root
+borgbackup_cron_day: "*"
+borgbackup_cron_minute: "*/5"
+borgbackup_cron_hour: "*"
+borgbackup_passphrase: "Otus2020"
+# borgbackup_appendonly: true
+borgbackup_servers:
+  - fqdn: server
+    user: borgbackup
+    type: normal
+    home: /var/backup/
+    pool: repos
+    options: ""
+borgbackup_include:
+  - "/etc"
+  - "/root"
+  - "/home"
+borgbackup_retention:
+  last: 10
+  hourly: 2
+  daily: 93
+  weekly: 12
+  monthly: 12
+  yearly: 1

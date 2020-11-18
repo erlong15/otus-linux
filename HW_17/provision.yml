@@ -1,0 +1,55 @@
+---
+- name: all
+  hosts: all
+  become: true
+  tasks:
+    - name: Disable SELinux
+      ansible.posix.selinux:
+        state: disabled
+
+    - name: DNS hosts server
+      lineinfile:
+        path: "/etc/hosts"
+        regexp: "^192.168.50.10"
+        line: "192.168.50.10 server"
+    - name: DNS hosts client
+      lineinfile:
+        path: "/etc/hosts"
+        regexp: "^192.168.50.20"
+        line: "192.168.50.20 client"
+    - name: install rsync
+      yum:
+        name: rsync
+
+- name: server
+  hosts: server
+  become: true
+  tasks:
+    - name: Create a new ext4 primary partition
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        fs_type: ext4
+    - name: Create a ext4 filesystem on /dev/sdb1
+      community.general.filesystem:
+        fstype: ext4
+        dev: /dev/sdb1
+    - name: Mount up device by label
+      ansible.posix.mount:
+        path: /var/backup
+        src: /dev/sdb1
+        fstype: ext4
+        state: mounted
+
+- name: borgbackup_servers
+  become: true
+  hosts: borgbackup_servers
+  roles:
+    - fiaasco.borgbackup
+
+- name: borgbackup_client
+  become: true
+  hosts: borgbackup_client
+  roles:
+    - fiaasco.borgbackup

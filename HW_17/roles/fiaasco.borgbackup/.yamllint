@@ -1,0 +1,12 @@
+extends: default
+
+ignore: |
+  *test_client.yml
+  *test_client_restore.yml
+  *test_server.yml
+  *test_mgt.yml
+
+rules:
+  line-length:
+    max: 1024
+    level: warning
