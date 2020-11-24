@@ -3,7 +3,7 @@
 ## Домашнее задание
 
 ```txt
-ценарии iptables
+cценарии iptables
 1) реализовать knocking port
 - centralRouter может попасть на ssh inetrRouter через knock скрипт
 пример в материалах
