@@ -1,0 +1,274 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+    - name: yum install 
+      yum:
+        name:
+          - fping
+          - libselinux-python
+          - mtr
+          - tcpdump
+          - nc
+          - nmap
+
+- hosts: routers
+  become: true
+  handlers:
+    - name: restart network
+      systemd:
+        name: NetworkManager
+        state: restarted
+
+  tasks:
+    - name: yum install
+      yum:
+        name:
+          - tmux
+          - NetworkManager-config-routing-rules
+    - name: start and enable NetworkManager-dispatcher
+      systemd:
+        name: NetworkManager-dispatcher
+        state: started
+        enabled: true
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+    - name: config lineinfile 
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile | default([])}}"
+      when: lineinfile | default('', false)
+      notify:
+        - restart network
+
+   # iptables -t nat -A PREROUTING -p tcp -d $EXT_R_IP --dport $PORT1 -j DNAT --to-destination $LOCAL_IP:$PORT2
+        # iptables -A FORWARD -i eth0 -d $LOCAL_IP -p tcp --dport $PORT2 -j ACCEPT
+- hosts: inetRouter2
+  become: true
+  handlers:
+    - name: save iptables
+      community.general.iptables_state:
+        state: saved
+        path: /etc/sysconfig/iptables
+  tasks:
+    # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: 'eth2'
+        source: '0.0.0.0/0'
+        destination: '192.168.0.2/32'
+        jump: MASQUERADE
+        protocol: 'tcp'
+        comment: Ansible NAT Masquerade
+      notify:
+        - save iptables
+    - name: forvording 80 to 8080
+      iptables:
+        table: nat
+        chain: PREROUTING
+        in_interface: eth1
+        protocol: tcp
+        match: tcp
+        destination_port: "80"
+        jump: DNAT
+        to_destination: "192.168.0.2:8080"
+        comment: Redirect web traffic to port 8080
+      notify:
+        - save iptables
+
+- hosts: inetRouter
+  become: true
+  handlers:
+    - name: save iptables
+      community.general.iptables_state:
+        state: saved
+        path: /etc/sysconfig/iptables
+    - name: restart sysvi
+      sysvinit:
+        name: network
+        state: restarted
+        
+  tasks:
+    # iptables -t nat -A POSTROUTING ! -d 192.168.0.0/16 -o eth0 -j MASQUERADE
+    - name: Create Iptables NAT chain
+      iptables:
+        table: nat
+        chain: POSTROUTING
+        out_interface: 'eth0'
+        source: '0.0.0.0/0'
+        destination: '!192.168.0.0/16'
+        jump: MASQUERADE
+        protocol: 'all'
+        comment: Ansible NAT Masquerade
+      notify:
+        - save iptables
+    - name: config lineinfile systemV
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile }}"
+      notify: 
+        - restart sysvi
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: net.ipv4.conf.all.forwarding
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+
+    - name: Get existing iptables rules
+      become: true
+      command: iptables -n -L
+      changed_when: false
+      register: iptables_rules
+    - name: Create custom iptables chain
+      become: true
+      command: "iptables -N TRAFFIC"
+      when: "'Chain TRAFFIC' not in iptables_rules.stdout"
+    - name: Create custom iptables chain
+      become: true
+      command: "iptables -N SSH-INPUT"
+      when: "'Chain SSH-INPUT' not in iptables_rules.stdout"
+    - name: Create custom iptables chain
+      become: true
+      command: "iptables -N SSH-INPUTTWO"
+      when: "'Chain SSH-INPUTTWO' not in iptables_rules.stdout"
+    - name: iptables check
+      register: iptables_save
+      changed_when: false
+      command: iptables-save
+    - name: fff1
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 22 -m recent --rcheck --seconds 30 --name SSH2  -m comment --comment "FFF1" -j ACCEPT
+      when: "'FFF1' not in iptables_save.stdout"
+    - name: fff2
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH2 --remove -m comment --comment "FFF2" -j DROP
+      when: "'FFF2' not in iptables_save.stdout"
+    - name: fff3
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 9991 -m recent --rcheck --name SSH1 -m comment --comment "FFF3" -j SSH-INPUTTWO
+      when: "'FFF3' not in iptables_save.stdout"
+    - name: fff4
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH1 --remove  -m comment --comment "FFF4" -j DROP
+      when: "'FFF4' not in iptables_save.stdout"      
+    - name: fff5
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 7777 -m recent --rcheck --name SSH0 -m comment --comment "FFF5" -j SSH-INPUT
+      when: "'FFF5' not in iptables_save.stdout"
+    - name: fff6
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp -m recent --name SSH0 --remove -m comment --comment "FFF6" -j DROP
+      when: "'FFF6' not in iptables_save.stdout"
+    - name: fff7
+      command: iptables -A TRAFFIC -m state --state NEW -m tcp -p tcp --dport 8881 -m recent --name SSH0 --set  -m comment --comment "FFF7" -j DROP
+      when: "'FFF7' not in iptables_save.stdout"
+    - name: fff8
+      command: iptables -A SSH-INPUT -m recent --name SSH1 --set -m comment --comment "FFF8" -j DROP
+      when: "'FFF8' not in iptables_save.stdout"      
+    - name: fff9
+      command: iptables -A SSH-INPUTTWO -m recent --name SSH2 --set  -m comment --comment "FFF9" -j DROP
+      when: "'FFF9' not in iptables_save.stdout"       
+    - name: fffa
+      command: iptables -A TRAFFIC -m comment --comment "FFFA" -j DROP
+      when: "'FFFA' not in iptables_save.stdout"           
+    - name: Create Iptables NAT chain
+      iptables:
+        chain: INPUT
+        source: '192.168.0.2'
+        destination: '192.168.255.1'
+        jump: TRAFFIC
+        match: tcp
+        protocol: 'tcp'
+        state: present
+        comment: Ansible NAT Masquerade
+        destination_port: "{{ item }}"
+      loop:
+        - "22"
+        - "7777"
+        - "9991"
+        - "8881"
+      notify:
+        - save iptables
+
+    - name: "222"
+      iptables:
+        chain: TRAFFIC
+        ctstate: ESTABLISHED,RELATED
+        jump: ACCEPT
+      notify:
+        - save iptables
+    
+
+
+- hosts: servers
+  handlers:
+    - name: restart network
+      systemd:
+        name: NetworkManager
+        state: restarted
+    - name: restart nginx
+      systemd:
+        name: nginx
+        state: restarted
+  become: true
+  tasks:
+    - name: yum install
+      yum:
+        name:
+          - tmux
+          - NetworkManager-config-routing-rules
+          - nginx
+    - name: start and enable NetworkManager-dispatcher
+      systemd:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - nginx
+        - NetworkManager-dispatcher
+    - name: config lineinfile 
+      lineinfile:
+        path: "{{ item.path }}"
+        regexp: "{{ item.regexp }}"
+        line: "{{ item.line }}"
+        create: true
+      loop: "{{ lineinfile | default([])}}"
+      when: lineinfile | default('', false)
+      notify:
+        - restart network
+    - name: config  nginx 8080
+      lineinfile:
+        path: "/etc/nginx/nginx.conf"
+        regexp: "listen       80 default_server;"
+        line: "listen 8080 default_server;"
+      notify:
+        - restart nginx
+    - name: add knock.sh
+      template:
+        src: ./template/knock.sh
+        dest: /usr/local/bin/knock.sh
+        owner: root
+        group: root
+        mode: '0777'
+
+
+- hosts: all
+  become: true
+  tasks:
+    - name: restart network
+      sysvinit:
+        name: network
+        state: restarted

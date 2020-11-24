@@ -1,0 +1,16 @@
+---
+ip_gateway: "192.168.0.1"
+
+lineinfile:
+  # - name: eth0
+  - path: '/etc/sysconfig/network-scripts/ifcfg-eth0'
+    regexp: '^DEFROUTE='
+    line: 'DEFROUTE=no'
+  # - name: eth1
+  - path: '/etc/sysconfig/network-scripts/ifcfg-eth1'
+    regexp: '^GATEWAY='
+    line: 'GATEWAY={{ ip_gateway }}'
+
+  - path: "/etc/sysconfig/network-scripts/route-eth1"
+    line: "default via 192.168.0.1 dev eth1 table main"
+    regexp: "^default via"

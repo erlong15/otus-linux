@@ -1,0 +1,91 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+:inetRouter => {
+        :box_name => "centos/6",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                ]
+  },
+  :centralRouter => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "router-net"},
+                   {ip: '192.168.0.1', adapter: 3, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"},
+                   {ip: '192.168.255.6', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"}
+                ]
+  },
+  
+  :centralServer => {
+        :box_name => "centos/7",
+        :net => [
+                   {ip: '192.168.0.2', adapter: 2, netmask: "255.255.255.240", virtualbox__intnet: "dir-net"}
+                ]
+  },
+  :inetRouter2 => {
+        :box_name => "centos/7",
+        #:public => {:ip => '10.10.10.1', :adapter => 1},
+        :net => [
+                   {ip: '192.168.50.10', adapter: 2},
+                   {ip: '192.168.255.5', adapter: 6, netmask: "255.255.255.252", virtualbox__intnet: "router2-net"}
+                ]
+  } 
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+        box.vm.synced_folder ".", "/vagrant", disabled: true
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        box.vm.provision 'ansible' do |ansible|
+            # ansible.verbose = "v"
+            ansible.groups = { 
+                "all" => [  "centralServer", 
+                            "centralRouter", 
+                            "inetRouter",
+                            "inetRouter2"
+                        ],
+                "inetRouters" => [
+                  "inetRouter2",
+                  "inetRouter"
+                ],
+                "routers" => [
+                                "inetRouter2",
+                                "centralRouter"
+                            ],
+                "servers" => [ 
+                              "centralServer"
+                            ]
+
+            }
+            ansible.become = true
+            ansible.host_key_checking = false
+            ansible.playbook = "provision.yaml"
+        end
+
+      end
+
+  end
+  
+  
+end
