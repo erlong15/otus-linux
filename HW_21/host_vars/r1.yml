@@ -1,0 +1,5 @@
+---
+ip_loopback: 1.1.1.1/32
+# eth2_bandwidth: "50"
+eth2_cost: "10"
+eth1_cost: "10"

@@ -1,0 +1,78 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+
+  :r1 => {
+    :box_name => "centos/7",
+    :net => [
+                {ip: '192.168.255.1', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
+                {ip: '192.168.255.5', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"}
+            ]
+  },
+  
+  :r2 => {
+    :box_name => "centos/7",
+    :net => [
+              {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r2"},
+              {ip: '192.168.255.9', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
+            ]
+  },
+  :r3 => {
+    :box_name => "centos/7",
+    :net => [
+              {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.252", virtualbox__intnet: "r1-r3"},
+              {ip: '192.168.255.10', adapter: 3, netmask: "255.255.255.252", virtualbox__intnet: "r2-r3"},
+            ]
+  }
+
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+        box.vm.synced_folder ".", "/vagrant", disabled: true
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        box.vm.provision 'ansible' do |ansible|
+            # ansible.verbose = "v"
+            ansible.groups = { 
+                "all" => [  
+                      "r1",
+                      "r2",
+                      "r3"
+                        ],
+                "routers" => [
+                      "r1",
+                      "r2",
+                      "r3"
+                            ]
+            }
+            ansible.become = true
+            ansible.host_key_checking = false
+            ansible.playbook = "provision.yaml"
+        end
+
+      end
+
+  end
+  
+  
+end

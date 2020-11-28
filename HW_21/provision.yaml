@@ -1,0 +1,98 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+    - name: Install frr repo
+      yum:
+        name: https://rpm.frrouting.org/repo/frr-stable-repo-1-0.el7.noarch.rpm
+        state: present
+
+    - name: yum install 
+      yum:
+        name:
+          - fping
+          - libselinux-python
+          - mtr
+          - tcpdump
+          - nc
+          - nmap
+          - frr
+          - frr-pythontools
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+       - net.ipv6.conf.all.forwarding
+       - net.ipv4.conf.all.forwarding
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '0'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+        - net.ipv4.conf.all.rp_filter
+        - net.ipv4.conf.default.rp_filter
+        - net.ipv4.conf.eth1.rp_filter
+        - net.ipv4.conf.eth2.rp_filter
+    - name: enable ospfd
+      template:
+        src: ./template/daemons
+        dest: /etc/frr/daemons
+        owner: frr
+        group: frr
+        mode: '0750'
+      notify:
+       - reload frr
+
+    - name: config ospfd
+      template:
+        src: ./template/ospfd.conf
+        dest: /etc/frr/ospfd.conf
+        owner: frr
+        group: frr
+        mode: '0600'
+        backup: true
+      notify:
+       - reload frr
+    - name: config zebra
+      template:
+        src: ./template/zebra.conf
+        dest: /etc/frr/zebra.conf
+        owner: frr
+        group: frr
+        mode: '0600'
+        backup: true
+      notify:
+       - reload frr
+    - name: start and enable frr
+      systemd:
+        name: frr
+        state: started
+        enabled: true
+    - name: Get ip lo
+      become: true
+      command: ip add sh lo
+      changed_when: false
+      register: ip_lo_out
+    - name: set ip to lo
+      become: true
+      command: "ip addr add {{  ip_loopback }} dev lo"
+      when: ip_loopback not in ip_lo_out.stdout
+
+  handlers:
+    - name: reload frr
+      systemd:
+        name: frr
+        # state: reloaded
+        state: restarted
+        enabled: true
