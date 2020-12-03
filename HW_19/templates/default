@@ -1,0 +1,9 @@
+default menu
+prompt 0
+timeout 30
+MENU TITLE Demo PXE setup
+label install_centos8
+menu label ^Install CentOS 8
+menu default
+kernel images/CentOS-8.2/vmlinuz
+append initrd=images/CentOS-8.2/initrd.img ip=enp0s3:dhcp inst.repo=http://10.0.0.20/auto-install inst.ks=http://10.0.0.20/ks.cfg
