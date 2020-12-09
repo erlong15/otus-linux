@@ -1,0 +1,9 @@
+ONBOOT=yes
+VLAN=yes
+BOOTPROTO=static
+TYPE=Ethernet
+DEVICE={{ item.name }}.{{ item.vlan }}
+NM_CONTROLLED=no
+IPADDR={{ item.ip }}
+PREFIX={{ item.prefix }}
+

@@ -1,0 +1,5 @@
+ONBOOT=yes 
+BOOTPROTO=none 
+DEVICE={{ item.name }}
+NM_CONTROLLED=no
+

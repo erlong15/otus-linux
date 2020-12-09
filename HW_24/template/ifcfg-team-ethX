@@ -1,0 +1,8 @@
+DEVICE={{ item.name }}
+ONBOOT=yes
+BOOTPROTO=none
+NM_CONTROLLED=no
+USERCTL=no
+DEVICETYPE="TeamPort"
+TEAM_MASTER="team0"
+TEAM_PORT_CONFIG='{ "prio" : -100 }'

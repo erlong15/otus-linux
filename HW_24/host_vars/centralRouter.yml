@@ -1,0 +1,18 @@
+---
+eth:
+  - name: "eth3"
+    vlan: "100"
+    ip: ""
+    prefix: ""
+  - name: "eth3"
+    vlan: "101"
+    ip: ""
+    prefix: ""
+
+team:
+  config:
+    ip: "192.168.255.2"
+    prefix: "24"
+  interfase:
+    - name: "eth1"
+    - name: "eth2"

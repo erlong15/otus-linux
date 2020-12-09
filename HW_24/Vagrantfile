@@ -1,0 +1,105 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+
+  :inetRouter => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "teaming"},
+      { adapter: 3, virtualbox__intnet: "teaming"}
+            ]
+  },
+  
+  :centralRouter => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "teaming"},
+      { adapter: 3, virtualbox__intnet: "teaming"},
+      { adapter: 4, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testServer1 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testClient1 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testServer2 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  },
+  :testClient2 => {
+    :box_name => "centos/7",
+    :net => [
+      { adapter: 2, virtualbox__intnet: "isolated"},
+            ]
+  }
+
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+        box.vm.synced_folder ".", "/vagrant", disabled: true
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        if boxconfig.key?(:public)
+          box.vm.network "public_network", boxconfig[:public]
+        end
+
+        box.vm.provision "shell", inline: <<-SHELL
+          mkdir -p ~root/.ssh
+                cp ~vagrant/.ssh/auth* ~root/.ssh
+        SHELL
+        
+        box.vm.provision 'ansible' do |ansible|
+            # ansible.verbose = "v"
+            ansible.groups = { 
+                "all" => [  
+                      "inetRouter",
+                      "centralRouter",
+                      "testServer1",
+                      "testClient1",
+                      "testServer2",
+                      "testClient2"
+                        ],
+                "isolated" => [  
+                  "testServer1",
+                  "testClient1",
+                  "testServer2",
+                  "testClient2",
+                  "centralRouter"
+                    ],
+                "teaming" => [
+                  "centralRouter",
+                  "inetRouter"
+                ]
+            }
+            ansible.become = true
+            ansible.host_key_checking = false
+            ansible.playbook = "provision.yaml"
+        end
+
+      end
+
+  end
+  
+  
+end

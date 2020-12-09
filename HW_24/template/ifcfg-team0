@@ -1,0 +1,9 @@
+DEVICE=team0
+IPADDR={{ team.config.ip }}
+PREFIX={{ team.config.prefix }}
+ONBOOT=yes
+NM_CONTROLLED=no
+USERCTL=no
+BOOTPROTO=none
+DEVICETYPE="Team"
+TEAM_CONFIG='{ "runner" : {  "name" : "activebackup",  "hwaddr_policy" : "by_active" }, "link_watch" : {  "name" : "ethtool" } }'

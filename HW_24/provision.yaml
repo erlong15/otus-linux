@@ -1,0 +1,84 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+
+    - name: yum install 
+      yum:
+        name:
+          - fping
+          - libselinux-python
+          - mtr
+          - tcpdump
+          - nc
+          - nmap
+          - vconfig
+
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+       - net.ipv6.conf.all.forwarding
+       - net.ipv4.conf.all.forwarding
+
+    - name: Add the 802.1q module
+      community.general.modprobe:
+        name: 8021q
+        state: present
+- hosts: isolated
+  become: true
+  handlers:
+    - name: restart network
+      systemd:
+        name: network
+        state: restarted
+  tasks:
+    - name: config eth1
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name }}" 
+        src: template/ifcfg-ethX
+        mode: '0600'
+      loop: "{{ eth }}"
+      notify:
+       - restart network
+
+    - name: config eth1 vlan
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-eth1.{{ item.vlan }}"
+        src: template/ifcfg-ethX.vlan
+        mode: '0600'
+      loop: "{{ eth }}"
+      notify:
+       - restart network
+- hosts: teaming
+  become: true
+  handlers:
+  - name: restart network
+    systemd:
+      name: network
+      state: restarted
+  tasks:
+    - name: config teaming
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-team0" 
+        src: template/ifcfg-team0
+        mode: '0600'
+      notify:
+       - restart network
+
+    - name: config eth1 vlan
+      template:
+        dest: "/etc/sysconfig/network-scripts/ifcfg-{{ item.name }}"
+        src: template/ifcfg-team-ethX
+        mode: '0600'
+      loop: "{{ team.interfase }}"
+      notify:
+       - restart network
