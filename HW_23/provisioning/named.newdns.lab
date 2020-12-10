@@ -1,0 +1,17 @@
+$TTL 3600
+$ORIGIN newdns.lab.
+@               IN      SOA     ns01.dns.lab. root.dns.lab. (
+                            2020120901 ; serial
+                            3600       ; refresh (1 hour)
+                            600        ; retry (10 minutes)
+                            86400      ; expire (1 day)
+                            600        ; minimum (10 minutes)
+                        )
+
+                IN      NS      ns01.dns.lab.
+                IN      NS      ns02.dns.lab.
+
+; DNS Servers
+
+www            IN      A       192.168.50.15
+www            IN      A       192.168.50.16

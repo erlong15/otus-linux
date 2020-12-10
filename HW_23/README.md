@@ -25,3 +25,50 @@ www - смотрит на обоих клиентов
 5 - сделано основное задание
 6 - выполнено задания со звездочкой 
 ```
+
+```txt
+# Vagrant DNS Lab
+
+A Bind's DNS lab with Vagrant and Ansible, based on CentOS 7.
+
+# Playground
+
+<code>
+    vagrant ssh client
+</code>
+
+  * zones: dns.lab, reverse dns.lab and ddns.lab
+  * ns01 (192.168.50.10)
+    * master, recursive, allows update to ddns.lab
+  * ns02 (192.168.50.11)
+    * slave, recursive
+  * client (192.168.50.15)
+    * used to test the env, runs rndc and nsupdate
+  * zone transfer: TSIG key
+```
+
+## Описание
+
+### Запуск стенда
+
+- установка Ansible
+
+    ```bash
+    cd HW_20
+    python3.8 -m venv venv
+    source venv/bin/activate
+    pip install --upgrade pip
+    pip install -r requirements.txt
+    ```
+
+- Запуск виртуальных машин и настройка окружения.
+
+    ```bash
+    make install
+    ```
+
+- Запуск теста доступности. Проверяет dig с клиента_1 и клиента_2, ошибки не выдает, но по выводу можно понять работает стенд как надо или нет.
+
+    ```bash
+    make test
+    ```
