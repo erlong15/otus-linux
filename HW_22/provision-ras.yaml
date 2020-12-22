@@ -1,0 +1,110 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+
+    - name: yum install 
+      yum:
+        name:
+          - iperf3
+          - openvpn
+
+    - name: config static key
+      template:
+        dest: "/etc/openvpn/static.key" 
+        src: template/static.key
+        owner: root
+        group: root
+        mode: '0600'
+      diff: no 
+      
+- hosts: server
+  become: true
+  tasks:
+    - name: sysctl config
+      ansible.posix.sysctl: 
+        name: "{{ item }}"
+        value: '1'
+        sysctl_set: yes
+        state: present
+        reload: true
+      loop:
+       - net.ipv6.conf.all.forwarding
+       - net.ipv4.conf.all.forwarding
+    - name: yum install 
+      yum:
+        name:
+          - easy-rsa
+    - name: copy ease-rsa
+      copy:
+        src: template/easy-rsa
+        dest: /root/easy-rsa
+        directory_mode: true
+        owner: root
+        group: root
+        mode: '0600'
+      notify:
+        - reload openvpn
+    - name: copy ease-rsa
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: '0600'
+      loop:
+        - src: template/easy-rsa/pki/ca.crt
+          dest: /etc/openvpn/server/
+        - src: template/easy-rsa/pki/issued/srv-openvpn.crt
+          dest: /etc/openvpn/server/
+        - src: template/easy-rsa/pki/private/srv-openvpn.key
+          dest: /etc/openvpn/server/
+        - src: template/easy-rsa/pki/ca.crt
+          dest: /etc/openvpn/client/
+        - src: template/easy-rsa/pki/issued/client-01.crt
+          dest: /etc/openvpn/client/
+        - src: template/easy-rsa/pki/private/client-01.key
+          dest: /etc/openvpn/client/
+        - src: template/easy-rsa/pki/dh.pem
+          dest: /etc/openvpn/server
+        - src: template/easy-rsa/pki/crl.pem
+          dest: /etc/openvpn/server
+      notify: 
+          - reload openvpn
+
+    - name: config server conf
+      template:
+        dest: "/etc/openvpn/server.conf" 
+        src: template/server_ras_server.conf
+        owner: root
+        group: root
+        mode: '0600'
+      notify: 
+        - reload openvpn
+    - name: start and enablad
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: started
+        enabled: true
+    # - name: Create Iptables NAT chain
+    #   iptables:
+    #     table: nat
+    #     chain: POSTROUTING
+    #     out_interface: 'eth0'
+    #     source: '10.10.10.0/24'
+    #     destination: '0.0.0.0/0'
+    #     jump: MASQUERADE
+    #     protocol: 'all'
+    #     comment: Ansible NAT Masquerade
+  handlers:
+    - name: reload openvpn
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: restarted
+        enabled: true

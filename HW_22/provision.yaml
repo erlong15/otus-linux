@@ -1,0 +1,15 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+
+    - name: yum install 
+      yum:
+        name:
+          - iperf3
+          - openvpn
+          - tcpdump

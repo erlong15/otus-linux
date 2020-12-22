@@ -1,0 +1,18 @@
+set_var EASYRSA                 "$PWD"
+set_var EASYRSA_PKI             "$EASYRSA/pki"
+set_var EASYRSA_DN              "cn_only"
+set_var EASYRSA_REQ_COUNTRY     "RU"
+set_var EASYRSA_REQ_PROVINCE    "Moscow"
+set_var EASYRSA_REQ_CITY        "Moscow"
+set_var EASYRSA_REQ_ORG         "OTUS ltd"
+set_var EASYRSA_REQ_EMAIL       "chudo88@gmail.com"
+set_var EASYRSA_REQ_OU          "IT department"
+set_var EASYRSA_KEY_SIZE        4096
+set_var EASYRSA_ALGO            rsa
+set_var EASYRSA_CA_EXPIRE       7500
+set_var EASYRSA_CERT_EXPIRE     3650
+set_var EASYRSA_NS_SUPPORT      "no"
+set_var EASYRSA_NS_COMMENT      "CERTIFICATE AUTHORITY"
+set_var EASYRSA_EXT_DIR         "$EASYRSA/x509-types"
+set_var EASYRSA_SSL_CONF        "$EASYRSA/openssl-1.0.cnf"
+set_var EASYRSA_DIGEST          "sha512"

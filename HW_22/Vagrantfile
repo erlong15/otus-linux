@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+    config.vm.box = "centos/7"
+    config.vm.synced_folder ".", "/vagrant", disabled: true
+  
+   config.vm.provision "ansible" do |ansible|
+  #    ansible.verbose = "vvv"
+     ansible.playbook = "provision.yaml"
+     ansible.become = "true"
+     ansible.groups = {
+        "all" => ["server",
+                    "client"]
+      }
+     ansible.raw_arguments = ['--diff']
+   end
+  
+    config.vm.provider "virtualbox" do |v|
+      v.memory = 256
+      v.cpus = 1
+    end
+  
+    config.vm.define "server" do |server|
+      server.vm.network "private_network", ip: "192.168.50.9"
+      server.vm.hostname = "server"
+    end
+    config.vm.define "client" do |client|
+      client.vm.network "private_network", ip: "192.168.50.20"
+      client.vm.hostname = "client"
+    end
+  
+  end

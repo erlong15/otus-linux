@@ -1,0 +1,74 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: yum install epl
+      yum:
+        name:
+          - epel-release
+
+    - name: yum install 
+      yum:
+        name:
+          - iperf3
+          - openvpn
+
+    - name: config static key
+      template:
+        dest: "/etc/openvpn/static.key" 
+        src: template/static.key
+        owner: root
+        group: root
+        mode: '0600'
+      diff: no 
+      
+- hosts: server
+  become: true
+  tasks:   
+    - name: config server conf
+      template:
+        dest: "/etc/openvpn/server.conf" 
+        src: template/server_server..conf
+        owner: root
+        group: root
+        mode: '0600'
+      notify: 
+        - reload openvpn
+    - name: start and enablad
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: started
+        enabled: true
+  handlers:
+    - name: reload openvpn
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: restarted
+        enabled: true
+- hosts: client
+  become: true
+  tasks:   
+    - name: config server conf
+      template:
+        dest: "/etc/openvpn/server.conf" 
+        src: template/client_server.conf
+        owner: root
+        group: root
+        mode: '0600'
+      notify: 
+        - reload openvpn
+    - name: start and enablad
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: started
+        enabled: true        
+  handlers:
+    - name: reload openvpn
+      systemd:
+        name: openvpn@server
+        # state: reloaded
+        state: restarted
+        enabled: true
