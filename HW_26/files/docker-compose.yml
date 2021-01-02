@@ -1,0 +1,57 @@
+version: "2.2"
+
+services:
+  flask:
+    image: iudanet/flask-realworld-example-app:latest
+    networks:
+      - app-network
+  react:
+    image: iudanet/react-redux-realworld-example-app:latest
+    ports:
+      - "8081:8081"
+      - "8080:8080"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+    depends_on:
+      - wordpress
+
+  db-wordpress:
+    image: mysql:8.0
+    container_name: db
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=wordpress
+      - MYSQL_ROOT_PASSWORD=wordpress
+      - MYSQL_USER=wordpress
+      - MYSQL_PASSWORD=wordpress
+    volumes:
+      - dbdata:/var/lib/mysql
+    command: '--default-authentication-plugin=mysql_native_password'
+    networks:
+      - app-network
+
+  wordpress:
+    depends_on:
+      - db-wordpress
+    image: wordpress:5.1.1-fpm-alpine
+    container_name: wordpress
+    restart: unless-stopped
+    environment:
+      - WORDPRESS_DB_HOST=db-wordpress:3306
+      - WORDPRESS_DB_USER=wordpress
+      - WORDPRESS_DB_PASSWORD=wordpress
+      - WORDPRESS_DB_NAME=wordpress
+    volumes:
+      - wordpress:/var/www/html
+    networks:
+      - app-network
+volumes:
+  wordpress:
+  dbdata:
+
+networks:
+  app-network:
+    driver: bridge

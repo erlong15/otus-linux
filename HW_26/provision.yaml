@@ -1,0 +1,49 @@
+---
+- hosts: all
+  become: true
+  vars:
+   ansible_python_interpreter: /bin/python
+  tasks:
+    - name: install epel
+      yum:
+        name:
+          - epel-release
+
+    - name: install docker
+      yum:
+        name:
+          - docker
+          - python-pip
+          - python3-pip
+
+    - name: run docker
+      systemd:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: install the package, force upgrade
+      pip: 
+        name: pip==20.0.2
+        executable: pip-3
+
+    - name: pip install docker-compose
+      pip:
+        executable: pip-3
+        name:
+        - docker-compose
+        - docker
+
+    - name: copy folder docker-coompose
+      copy:
+        src: files/
+        dest: /opt/web/
+        directory_mode: yes
+
+    - name: set fact ansible_python_interpreter /bin/python3
+      set_fact:
+        ansible_python_interpreter: /bin/python3
+
+    - name: docker-compose run
+      docker_compose:
+        project_src: /opt/web
