@@ -26,16 +26,16 @@ vagrant стэнд с проброшенными на локалхост пор�
 
 Используются проекты
 
-* https://github.com/iudanet/react-redux-realworld-example-app (React)
-* https://github.com/iudanet/flask-realworld-example-app (Python / Flask )
+* [https://github.com/iudanet/react-redux-realworld-example-app] (React)
+* [https://github.com/iudanet/flask-realworld-example-app] (Python / Flask )
 * wordpress (php / php-fpm)
 
 Проэкты разворачиваются через docker-compose
 
 На хостовой машине:
 
-* http://localhost:8080 - Wordpres
-* http://localhost:8081 - React + Flask
+* [http://localhost:8080] - Wordpres
+* [http://localhost:8081] - React + Flask
 
 ### Установка Ansible
 
@@ -54,5 +54,5 @@ source venv/bin/activate # Окружение с Ansible
 make up # Запуск загранта и провижинига
 ```
 
-* http://localhost:8080 - Wordpres
-* http://localhost:8081 - React + Flask
+* [http://localhost:8080] - Wordpres
+* [http://localhost:8081] - React + Flask
