@@ -1,0 +1,8 @@
+---
+ipaadmin_password: ADMPassword1
+ipadm_password: DMPassword1
+ipaserver_domain: test.local
+ipaserver_hostname: ipaserver.test.local
+ipaserver_realm: TEST.LOCAL
+# ipaserver_setup_dns: yes
+# ipaserver_auto_forwarders: yes

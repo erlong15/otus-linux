@@ -1,0 +1,38 @@
+---
+- name: hosts add domain
+  become: true
+  hosts: all
+  tasks:
+    - file: path=/etc/hosts state=absent
+    - file: path=/etc/hosts state=touch
+    - yum: name=firewalld state=present
+    - systemd: name=firewalld state=started enabled=yes
+    - name: add to /etc/hosts
+      lineinfile:
+        dest: /etc/hosts 
+        regexp: '.*{{ item.domen }}$'
+        line: "{{ item.ip }} {{item.domen}}"
+        state: present
+      loop:
+        - domen: "ipaserver.test.local"
+          ip: "192.168.50.9"
+        - domen: "ipaclient.test.local"
+          ip: "192.168.50.20"
+
+- name: Playbook to configure IPA servers
+  hosts: ipaserver
+  become: true
+  # vars_files:
+  # - playbook_sensitive_data.yml
+
+  roles:
+  - role: ipaserver
+    state: present
+
+- name: Playbook to configure IPA clients with username/password
+  hosts: ipaclients
+  become: true
+
+  roles:
+  - role: ipaclient
+    state: present

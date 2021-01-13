@@ -33,3 +33,4 @@
 * [Домашняя работа №24 (Vlan and Bonds)](HW_24/README.md)
 * [Домашняя работа №25 (LADP)](HW_25/README.md)
 * [Домашняя работа №26 (Динамический Web)](HW_26/README.md)
+* [Домашняя работа №27 (Postgresql)](HW_27/README.md)

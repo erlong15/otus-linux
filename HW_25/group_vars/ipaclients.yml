@@ -1,0 +1,7 @@
+---
+ipaadmin_password: ADMPassword1
+ipaserver_domain: test.local
+ipaserver_realm: TEST.LOCAL
+ipaserver_hostname: ipaserver.test.local
+ipaclient_servers: ipaserver.test.local
+
