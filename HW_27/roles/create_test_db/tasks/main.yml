@@ -1,0 +1,17 @@
+---
+# tasks file for create_test_db
+- name: create_test_db
+  debug:
+    msg: "create_test_db!"
+
+- name: create db otus
+  become_user: postgres
+  community.general.postgresql_db:
+    name: otus
+
+- name: create barman user
+  become_user: postgres
+  community.general.postgresql_user:
+    name: barman
+    password: barman_pass
+    role_attr_flags: SUPERUSER,REPLICATION

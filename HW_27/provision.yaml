@@ -1,0 +1,41 @@
+---
+- name: hosts add domain
+  become: true
+  hosts: all
+  tasks:
+    - name: Hello
+      debug:
+        msg: "Hello!"
+
+
+- name: Установка postgres11
+  hosts: master, slave, barman
+  become: yes
+  roles:
+    - postgres_install
+
+- name: Настройка master
+  hosts: master
+  become: yes
+  roles:
+    - master-setup
+
+- name: Настройка slave
+  hosts: slave
+  become: yes
+  roles:
+    - slave-setup
+
+- name: Создание тестовой БД
+  hosts: master
+  become: yes
+  roles:
+    - create_test_db
+
+- name: Настройка barman
+  hosts: barman
+  become: yes
+  roles:
+    - barman_install
+  tags:
+    - barman
