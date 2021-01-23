@@ -1,0 +1,22 @@
+---
+# tasks file for postgres_install
+- name: install repo postgres11
+  yum:
+    name: https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
+    state: present
+
+- name: Ensure PostgreSQL packages are installed.
+  yum:
+    name: "{{ postgresql_packages }}"
+    state: present
+
+- name: Ensure PostgreSQL Python libraries are installed.
+  yum:
+    name: python-psycopg2
+    state: present
+
+# - name: start PostgreSQL
+#   systemd:
+#     name: postgresql-11
+#     state: started
+#     enabled: yes

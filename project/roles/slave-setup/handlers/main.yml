@@ -1,0 +1,6 @@
+---
+# handlers file for slave-setup
+- name: restart postgres
+  systemd:
+    name: postgresql-11
+    state: restarted
