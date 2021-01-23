@@ -7,6 +7,17 @@
       debug:
         msg: "Hello!"
 
+- name: Настройка сервера логов
+  hosts: log
+  become: yes
+  roles:
+    - rsyslog-server
+
+- name: Настройка отправки логов
+  hosts: all
+  become: yes
+  roles:
+    - rsyslog-client
 
 - name: Установка postgres11
   hosts: db1, db2, backup
