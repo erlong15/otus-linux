@@ -74,15 +74,29 @@ Vagrant.configure("2") do |config|
         box.vm.provision 'ansible' do |ansible|
             # ansible.verbose = "v"
             ansible.groups = { 
-                "all" => ["nginx",
-                          "app1",
-                          "app2",
-                          "db1",
-                          "db2",
-                          "backup",
-                          "log",
-                          "monitoring"
-                        ]
+              "all" => [
+                "nginx",
+                "app1",
+                "app2",
+                "db1",
+                "db2",
+                "backup",
+                "log",
+                "monitoring"
+                ],
+              "borgbackup_client" => [
+                "nginx",
+                "app1",
+                "app2",
+                "db1",
+                "db2",
+                "backup",
+                "log",
+                "monitoring"
+                ],
+              "borgbackup_servers" => [
+                "backup"
+              ]
 
             }
             ansible.become = true

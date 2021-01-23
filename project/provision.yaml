@@ -25,6 +25,18 @@
   roles:
     - rsyslog-client
 
+- name: borgbackup servers
+  become: true
+  hosts: borgbackup_servers
+  roles:
+    - fiaasco.borgbackup
+
+- name: borgbackup client
+  become: true
+  hosts: borgbackup_client
+  roles:
+    - fiaasco.borgbackup
+
 - name: Установка postgres11
   hosts: db1, db2, backup
   become: yes
