@@ -1,0 +1,98 @@
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+# -*- mode: ruby -*-
+# vim: set ft=ruby :
+
+MACHINES = {
+:nginx => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.2', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"},
+            {ip: "192.168.50.9",adapter: 3}
+
+          ]
+  },
+:app1 => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.3', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:app2 => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.4', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:db1 => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.5', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:db2 => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:backup => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.7', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:log => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.8', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+:monitoring => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.9', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
+}
+
+Vagrant.configure("2") do |config|
+
+  MACHINES.each do |boxname, boxconfig|
+    config.vm.define boxname do |box|
+        box.vm.synced_folder ".", "/vagrant", disabled: true
+        box.vm.box = boxconfig[:box_name]
+        box.vm.host_name = boxname.to_s
+        box.vm.provider "virtualbox" do |v|
+          v.memory = 512
+          v.cpus = 2
+        end
+        boxconfig[:net].each do |ipconf|
+          box.vm.network "private_network", ipconf
+        end
+        
+        box.vm.provision 'ansible' do |ansible|
+            # ansible.verbose = "v"
+            ansible.groups = { 
+                "all" => ["nginx",
+                          "app1",
+                          "app2",
+                          "db1",
+                          "db2",
+                          "backup",
+                          "log",
+                          "monitoring"
+                        ]
+
+            }
+            ansible.become = true
+            ansible.host_key_checking = false
+            ansible.playbook = "provision.yaml"
+        end
+
+      end
+
+  end
+  
+  
+end

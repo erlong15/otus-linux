@@ -1,0 +1,39 @@
+---
+- name: Hello play
+  become: true
+  hosts: all
+  tasks:
+    - name: Hello
+      debug:
+        msg: "Hello!"
+
+
+- name: Установка postgres11
+  hosts: db1, db2, backup
+  become: yes
+  roles:
+    - postgres_install
+
+- name: Настройка master
+  hosts: db1
+  become: yes
+  roles:
+    - master-setup
+
+- name: Настройка slave
+  hosts: db2
+  become: yes
+  roles:
+    - slave-setup
+
+- name: Создание тестовой БД
+  hosts: db1
+  become: yes
+  roles:
+    - create_test_db
+
+- name: Настройка barman
+  hosts: backup
+  become: yes
+  roles:
+    - barman_install
