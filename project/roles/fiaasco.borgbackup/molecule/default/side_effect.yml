@@ -1,0 +1,24 @@
+---
+
+- hosts: lamp
+  gather_facts: false
+  tasks:
+    - name: run a mysql backup
+      command: automysqlbackup
+
+- hosts: all:!borgbackup_servers
+  gather_facts: false
+  tasks:
+    - name: generate random file
+      command: dd if=/dev/urandom of=/root/sample.txt bs=1M count=4
+      args:
+        creates: /root/sample.txt
+    - name: template restore test
+      template:
+        src: restore.sh.j2
+        dest: /root/restore.sh
+        mode: "0755"
+    - name: back up
+      command: /usr/local/bin/borg-backup backup
+    - name: restore test file
+      command: /root/restore.sh restore root/sample.txt

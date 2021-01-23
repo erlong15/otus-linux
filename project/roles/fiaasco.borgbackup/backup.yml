@@ -1,0 +1,9 @@
+---
+
+- name: Configure Borg backup
+  hosts: all
+  become: true
+
+  roles:
+    - role: borgbackup
+      tags: ['backup']
