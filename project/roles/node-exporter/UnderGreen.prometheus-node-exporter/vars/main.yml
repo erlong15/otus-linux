@@ -1,0 +1,4 @@
+# url: "{% if prometheus_node_exporter_version | version_compare('0.13.0', '>=') %}https://github.com/prometheus/node_exporter/releases/download/v{{ prometheus_node_exporter_version }}/{{ prometheus_node_exporter_release_name }}.tar.gz{% else %}https://github.com/prometheus/node_exporter/releases/download/{{ prometheus_node_exporter_version }}/{{ prometheus_node_exporter_release_name }}.tar.gz{% endif %}"
+url: http://admin.ott/git_files/{{ prometheus_node_exporter_release_name }}.tar.gz
+prometheus_node_exporter_version: 1.0.1
+prometheus_node_exporter_release_name: "node_exporter-{{ prometheus_node_exporter_version }}.linux-amd64"
