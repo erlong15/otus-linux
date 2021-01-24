@@ -9,5 +9,22 @@ prometheus_targets:
     - "db2:9100"
     - "backup:9100"
     - "log:9100"
+    - "monitoring:9100"
     labels:
       env: demo_otus
+
+grafana_security:
+  admin_user: otus
+  admin_password: Otus2021
+
+grafana_datasources:
+  - name: prometheus
+    type: prometheus
+    access: proxy
+    url: 'http://127.0.0.1:9090'
+    basicAuth: false
+
+grafana_dashboards:
+  - dashboard_id: 1860
+    revision_id: 21
+    datasource: prometheus

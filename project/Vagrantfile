@@ -52,7 +52,8 @@ MACHINES = {
 :monitoring => {
   :box_name => "centos/7",
   :net => [
-            {ip: '192.168.255.9', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+            {ip: '192.168.255.9', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"},
+            {ip: "192.168.50.15",adapter: 3}
           ]
 },
 }
