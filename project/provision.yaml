@@ -13,6 +13,11 @@
   roles:
     - base
 
+- hosts: all
+  become: true
+  roles:
+    - role: UnderGreen.prometheus-node-exporter
+
 - name: Настройка сервера логов
   hosts: log
   become: yes
