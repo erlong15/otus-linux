@@ -4,6 +4,12 @@
 # vim: set ft=ruby :
 
 MACHINES = {
+:backup => {
+  :box_name => "centos/7",
+  :net => [
+            {ip: '192.168.255.7', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
+          ]
+},
 :nginx => {
   :box_name => "centos/7",
   :net => [
@@ -36,12 +42,7 @@ MACHINES = {
             {ip: '192.168.255.6', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
           ]
 },
-:backup => {
-  :box_name => "centos/7",
-  :net => [
-            {ip: '192.168.255.7', adapter: 2, netmask: "255.255.255.0", virtualbox__intnet: "lan1"}
-          ]
-},
+
 :log => {
   :box_name => "centos/7",
   :net => [
