@@ -97,6 +97,15 @@ Vagrant.configure("2") do |config|
                 ],
               "borgbackup_servers" => [
                 "backup"
+              ],
+              "rsyslog-clients" => [
+                "nginx",
+                "app1",
+                "app2",
+                "db1",
+                "db2",
+                "backup",
+                "monitoring" 
               ]
 
             }

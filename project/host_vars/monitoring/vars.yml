@@ -1,0 +1,13 @@
+---
+prometheus_targets:
+  node:
+  - targets:
+    - "nginx:9100"
+    - "app1:9100"
+    - "app2:9100"
+    - "db1:9100"
+    - "db2:9100"
+    - "backup:9100"
+    - "log:9100"
+    labels:
+      env: demo_otus

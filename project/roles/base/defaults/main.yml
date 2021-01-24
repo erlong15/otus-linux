@@ -1,2 +1,19 @@
 ---
 # defaults file for base
+hosts_dns:
+  - ip: "192.168.255.2"
+    fqdn: "nginx"
+  - ip: "192.168.255.3"
+    fqdn: "app1"
+  - ip: "192.168.255.4"
+    fqdn: "app2"
+  - ip: "192.168.255.5"
+    fqdn: "db1"
+  - ip: "192.168.255.6"
+    fqdn: "db2"
+  - ip: "192.168.255.7"
+    fqdn: "backup"
+  - ip: "192.168.255.8"
+    fqdn: "log"
+  - ip: "192.168.255.9"
+    fqdn: "monitoring"

@@ -13,10 +13,16 @@
   roles:
     - base
 
-- hosts: all
+- name: Установка node-exporter
+  hosts: all
   become: true
   roles:
-    - role: UnderGreen.prometheus-node-exporter
+    - cloudalchemy.node-exporter
+
+- name: Установка  prometheus
+  hosts: monitoring
+  roles:
+    - cloudalchemy.prometheus
 
 - name: Настройка сервера логов
   hosts: log
@@ -25,7 +31,7 @@
     - rsyslog-server
 
 - name: Настройка отправки логов
-  hosts: all
+  hosts: rsyslog-clients
   become: yes
   roles:
     - rsyslog-client
