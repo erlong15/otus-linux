@@ -23,6 +23,11 @@
     - ip: "192.168.255.9"
       fqdn: "monitoring"
 
+- name: install epel-release
+  ansible.builtin.yum:
+    name:
+      - epel-release
+
 - name: install pkg
   yum:
     name: 
