@@ -13,6 +13,16 @@ prometheus_targets:
     labels:
       env: demo_otus
 
+prometheus_alertmanager_config:
+  - scheme: http
+    # path_prefix: 
+    # basic_auth:
+    #   username: user
+    #   password: pass
+    static_configs:
+      - targets: ["127.0.0.1:9093"]
+    # proxy_url: "127.0.0.2"
+
 grafana_security:
   admin_user: otus
   admin_password: Otus2021
@@ -28,3 +38,18 @@ grafana_dashboards:
   - dashboard_id: 1860
     revision_id: 21
     datasource: prometheus
+
+
+alertmanager_version: latest
+alertmanager_slack_api_url: "https://hooks.slack.com/services/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"
+alertmanager_receivers:
+  - name: slack
+    slack_configs:
+      - send_resolved: true
+        channel: '#alerting'
+alertmanager_route:
+  group_by: ['alertname', 'cluster', 'service']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 3h
+  receiver: slack
