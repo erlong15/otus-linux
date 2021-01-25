@@ -1,0 +1,17 @@
+---
+# tasks file for firewalld
+- name: enable and start firewalld
+  systemd:
+    name: firewalld.service
+    state: started
+    enabled: true
+
+- name: enable firewalld  ports
+  ansible.posix.firewalld:
+    port: "{{ item.port }}/tcp"
+    permanent: yes
+    state: enabled
+    zone: public
+  loop: "{{ firewalld_open_port }}"
+
+    
