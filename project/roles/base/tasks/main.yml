@@ -21,3 +21,22 @@
       - htop
       - tcpdump
       - mc
+
+- name: "systcl tcp"
+  become: true
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+  loop: "{{ sysctl_settings }}"
+
+
+- name: limit files
+  become: true
+  pam_limits:
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  loop: "{{ limit_files }}"
