@@ -12,6 +12,7 @@
   become: yes
   roles:
     - base
+    - firewalld
 
 - name: Установка node-exporter
   hosts: all
