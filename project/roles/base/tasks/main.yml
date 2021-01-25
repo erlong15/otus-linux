@@ -21,6 +21,7 @@
       - htop
       - tcpdump
       - mc
+      - nc
 
 - name: "systcl tcp"
   become: true
