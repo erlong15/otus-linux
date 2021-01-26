@@ -14,6 +14,8 @@ DATABASES = {
      }
  }
 
+ 
+
 # Uncomment to use MySQL:
 # DATABASES = {
 #     'default': {
