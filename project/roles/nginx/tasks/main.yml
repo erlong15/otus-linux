@@ -1,0 +1,18 @@
+---
+# tasks file for nginx
+- name: install nginx
+  ansible.builtin.yum:
+    name:
+      - nginx
+
+- name: config systemd
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes
