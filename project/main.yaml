@@ -80,3 +80,19 @@
   become: yes
   roles:
     - barman_install
+
+- name: развертывание приложение
+  hosts: nginx
+  become: yes
+  roles:
+    - nginx
+  tags:
+    - nginx
+
+- name: развертывание приложение
+  hosts: app1,app2
+  become: yes
+  roles:
+    - django
+  tags:
+    - django
