@@ -81,7 +81,7 @@
   roles:
     - barman_install
 
-- name: развертывание приложение
+- name: развертывание nginx
   hosts: nginx
   become: yes
   roles:
