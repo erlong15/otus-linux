@@ -24,15 +24,20 @@
 * https
 * Описание приложения
 * домены
-  * [http://grafana.otus.iudanet.com]
   * [http://hc.otus.iudanet.com]
-  * [http://prom.otus.iudanet.com]
-  * [http://alerts.otus.iudanet.com]
-
 
 ### база данных
 
 ### мониторинг
+
+* Развернут стек prometheus - alertmanager - grafana
+* домены
+  * [http://grafana.otus.iudanet.com]
+  * [http://prom.otus.iudanet.com]
+  * [http://alerts.otus.iudanet.com]
+* На хостах установлен  node_exporter  для сбора метрик
+* в grafana длбавлен дашборд для метрик node_exporter
+* Алерты шлются в канал slak
 
 ### Фаервол
 
