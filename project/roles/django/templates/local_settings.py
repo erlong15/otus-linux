@@ -1,6 +1,7 @@
-#SITE_ROOT = "https://my-monitoring-project.com"
-#SITE_NAME = "My Monitoring Project"
-# DEFAULT_FROM_EMAIL = "noreply@my-monitoring-project.com"
+SITE_ROOT = "https://hc.otus.iudanet.com"
+SITE_NAME = "My Otus Monitoring Project"
+DEFAULT_FROM_EMAIL = "otus@iudanet.com"
+# DEBUG = False
 
 # Uncomment to use Postgres:
 DATABASES = {
@@ -28,8 +29,8 @@ DATABASES = {
 # }
 
 # Email
-# EMAIL_HOST = "your-smtp-server-here.com"
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = "username"
-# EMAIL_HOST_PASSWORD = "password"
-# EMAIL_USE_TLS = True
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "otus@iudanet.com"
+EMAIL_HOST_PASSWORD = "pass123pass"
+EMAIL_USE_TLS = True
