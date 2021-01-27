@@ -30,9 +30,7 @@ prometheus_alertmanager_config:
       - targets: ["127.0.0.1:9093"]
     # proxy_url: "127.0.0.2"
 
-grafana_security:
-  admin_user: otus
-  admin_password: Otus2021
+
 
 grafana_datasources:
   - name: prometheus
@@ -48,7 +46,6 @@ grafana_dashboards:
 
 
 alertmanager_version: latest
-alertmanager_slack_api_url: "https://hooks.slack.com/services/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"
 alertmanager_receivers:
   - name: slack
     slack_configs:
