@@ -11,7 +11,7 @@
 # values can be found in the PostgreSQL documentation.
 #
 # The commented-out settings shown in this file represent the default values.
-# Re-commenting a setting is NOT sufficient to revert it to the default value;
+# Re-commenting a setting is NOT sufficient to revert it to the dlog_destinationefault value;
 # you need to reload the server.
 #
 # This file is read on server startup and when the server receives a SIGHUP
@@ -361,7 +361,7 @@ max_wal_senders = 10           # max number of walsender processes
 
 # - Where to Log -
 
-log_destination = 'stderr'              # Valid values are combinations of
+log_destination = 'syslog'              # Valid values are combinations of
                                         # stderr, csvlog, syslog, and eventlog,
                                         # depending on platform.  csvlog
                                         # requires logging_collector to be on.
