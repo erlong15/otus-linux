@@ -1,0 +1,35 @@
+---
+# tasks file for firewalld
+- name: enable and start firewalld
+  systemd:
+    name: firewalld.service
+    state: started
+    enabled: true
+
+- name: set zone
+  command: "firewall-cmd --zone={{ item.zone }} --add-interface={{ item.eth }} --permanent"
+  loop:  "{{ firewalld_zone_eth }}"
+  notify: reload firewalld
+# - name: zone to interfase
+#   ansible.posix.firewalld:
+#     zone: "{{ item.zone }}"
+#     interface: "{{ item.eth }}"
+#     permanent: yes
+#     state: enabled
+  #  loop:  "{{ firewalld_zone_eth }}"
+#   notify: reload firewalld
+
+- name: enable firewalld  ports
+  ansible.posix.firewalld:
+    port: "{{ item.port }}/{{ item.protocol | default('tcp') }}"
+    permanent: yes
+    state: enabled
+    zone: "{{ item.zone | default('work') }}"
+  loop: "{{ firewalld_open_port }}"
+  notify: reload firewalld
+
+# - name: reload firewalld
+#   systemd:
+#     name: firewalld.service
+#     state: reloaded
+   

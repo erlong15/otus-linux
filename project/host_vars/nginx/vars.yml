@@ -1,0 +1,14 @@
+firewalld_open_port:
+  - port: "22"
+  - port: "9100"
+  - port: "80"
+    zone: dmz
+  - port: "443"
+    zone: dmz
+firewalld_zone_eth:
+  - zone: public
+    eth: eth0
+  - zone: work
+    eth: eth1
+  - zone: dmz
+    eth: eth2

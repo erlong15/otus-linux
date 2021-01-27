@@ -1,0 +1,48 @@
+---
+# tasks file for nginx
+- name: install nginx
+  ansible.builtin.yum:
+    name:
+      - nginx
+
+- name: config systemd
+  template:
+    src: nginx.conf
+    dest: /etc/nginx/nginx.conf
+  notify: restart nginx
+
+
+- name: Create a directory if it does not exist
+  ansible.builtin.file:
+    path: /etc/nginx/ssl
+    state: directory
+    mode: '0700'
+
+- name: get dh file
+  get_url:
+    url: https://ssl-config.mozilla.org/ffdhe2048.txt
+    dest: /etc/nginx/ssl/ssl_dhparam.txt
+
+- name: copy sert
+  ansible.builtin.copy:
+    content: "{{ item.content }}"
+    dest: /etc/nginx/ssl/{{ item.file }}
+  notify: restart nginx
+  loop: "{{ nginx_ssl }}"
+  no_log: True
+- name: copy config default
+  template:
+    src: default.conf
+    dest: /etc/nginx/default.d/default.conf
+  notify: restart nginx
+- name: copy config proxy
+  template:
+    src: proxy.conf
+    dest: /etc/nginx/default.d/proxy.conf
+  notify: restart nginx
+
+- name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: yes
+    persistent: yes

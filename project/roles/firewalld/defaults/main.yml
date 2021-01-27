@@ -1,0 +1,14 @@
+---
+# defaults file for firewalld
+firewalld_open_port:
+  - port: "22"
+    zone: work
+    protocol: tcp
+  - port: "9100"
+
+
+firewalld_zone_eth:
+  - zone: public
+    eth: eth0
+  - zone: work
+    eth: eth1

@@ -1,0 +1,6 @@
+---
+# handlers file for firewalld
+- name: reload firewalld
+  systemd:
+    name: firewalld.service
+    state: reloaded

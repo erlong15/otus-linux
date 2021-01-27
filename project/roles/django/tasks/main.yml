@@ -1,0 +1,62 @@
+---
+# tasks file for django
+- name: install django dependes
+  ansible.builtin.yum:
+    name:
+      - git
+      - python3
+      - python3-devel
+      - python36-virtualenv
+      - postgresql-libs
+      - postgresql-devel
+      - python-setuptools
+
+- name: Install build tools
+  yum:
+    name: "@Development tools"
+    state: present
+
+- name: Git checkout
+  git:
+    repo: 'https://github.com/healthchecks/healthchecks.git'
+    dest: /opt/healthchecks
+    version: v1.18.0
+  notify: restart django
+
+- name: Install specified python requirements in indicated (virtualenv)
+  pip:
+    requirements: /opt/healthchecks/requirements.txt
+    virtualenv: /opt/venv
+    virtualenv_command: virtualenv-3
+  notify: restart django
+
+
+- name: config app1
+  template:
+    src: local_settings.py
+    dest: /opt/healthchecks/hc/local_settings.py
+  notify: restart django
+
+
+- name: django migrate
+  community.general.django_manage:
+    command: migrate
+    project_path: "/opt/healthchecks"
+    virtualenv: "/opt/venv"
+  run_once: true
+
+- name: config systemd
+  template:
+    src: django.service
+    dest: /etc/systemd/system/django.service
+  notify: restart django
+
+- name: systemd run
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: systemd run
+  ansible.builtin.systemd:
+    name: django
+    state: started
+    enabled: yes

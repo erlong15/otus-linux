@@ -1,0 +1,11 @@
+---
+
+- name: geerlingguy.repo-epel
+
+- src: https://github.com/FiaasCo/apache2
+  version: master
+  name: fiaasco.apache2
+
+- src: https://github.com/FiaasCo/mariadb
+  version: master
+  name: fiaasco.mariadb

@@ -1,0 +1,43 @@
+---
+# tasks file for base
+- name: DNS hosts server
+  lineinfile:
+    path: "/etc/hosts"
+    regexp: "^{{ item.ip }}"
+    line: "{{ item.ip }} {{ item.fqdn }}"
+  loop: "{{ hosts_dns }}"
+
+
+- name: install epel-release
+  ansible.builtin.yum:
+    name:
+      - epel-release
+
+- name: install pkg
+  yum:
+    name: 
+      - rsync
+      - tree
+      - htop
+      - tcpdump
+      - mc
+      - nc
+
+- name: "systcl tcp"
+  become: true
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+    sysctl_set: yes
+  loop: "{{ sysctl_settings }}"
+
+
+- name: limit files
+  become: true
+  pam_limits:
+    domain: "{{ item.domain }}"
+    limit_type: "{{ item.type }}"
+    limit_item: "{{ item.item }}"
+    value: "{{ item.value }}"
+  loop: "{{ limit_files }}"

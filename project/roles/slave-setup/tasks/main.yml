@@ -1,0 +1,49 @@
+---
+# tasks file for slave-setup
+- name: slave-setup
+  debug:
+    msg: "slave-setup!"
+- name: rm default pg_dir
+  command: "rm -rf /var/lib/pgsql/11/data"
+  become_user: root
+  args:
+    creates: /var/lib/pgsql/11/data/postgresql.conf
+- name: run copy to master
+  become_user: postgres
+  command: "/usr/pgsql-11/bin/pg_basebackup -h {{ pg_master_ip }} -D /var/lib/pgsql/11/data -p 5432"
+  args:
+    creates: /var/lib/pgsql/11/data/postgresql.conf
+
+- name: config slave postgresql.conf
+  ansible.builtin.template:
+    src: postgresql.conf.j2
+    dest: /var/lib/pgsql/11/data/postgresql.conf
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify:
+    - restart postgres
+
+- name: config slave pg_hba.conf
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: /var/lib/pgsql/11/data/pg_hba.conf
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify:
+    - restart postgres
+- name: config slave recovery.conf
+  ansible.builtin.template:
+    src: recovery.conf.j2
+    dest: /var/lib/pgsql/11/data/recovery.conf
+    owner: postgres
+    group: postgres
+    mode: '0600'
+  notify:
+    - restart postgres
+- name: postgresql enable and start
+  systemd:
+    name: postgresql-11
+    state: started
+    enabled: yes

@@ -1,0 +1,6 @@
+---
+# handlers file for django
+- name: restart django
+  ansible.builtin.systemd:
+    name: django
+    state: restarted

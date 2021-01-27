@@ -1,0 +1,99 @@
+---
+driver:
+  name: docker
+lint:
+  name: yamllint
+scenario:
+  name: ubuntu
+platforms:
+  - name: ubuntu-client-ubuntu-bionic
+    hostname: ubuntu-client-ubuntu-bionic
+    image: ubuntu:bionic
+    networks:
+      - name: ubuntu-borg
+    groups:
+      - clients
+      - extra_opts
+  - name: ubuntu-server-ubuntu-bionic
+    hostname: ubuntu-server-ubuntu-bionic
+    image: ubuntu:bionic
+    networks:
+      - name: ubuntu-borg
+    groups:
+      - borgbackup_servers
+  - name: ubuntu-management-ubuntu-bionic
+    hostname: ubuntu-management-ubuntu-bionic
+    image: ubuntu:bionic
+    networks:
+      - name: ubuntu-borg
+    groups:
+      - borgbackup_management
+      - clients
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: profile_tasks
+      gather_timeout: 30
+      interpreter_python: auto
+      jinja2_extensions: jinja2.ext.do
+      timeout: 30
+    ssh_connection:
+      pipelining: true
+  inventory:
+    group_vars:
+      all:
+        borgbackup_appendonly: true
+        borgbackup_servers:
+          - fqdn: ubuntu-server-ubuntu-bionic
+            user: borgds
+            type: normal
+            home: /var/backup/
+            pool: repos
+            options: ""
+        borgbackup_retention:
+          hourly: 12
+          daily: 7
+          weekly: 4
+          monthly: 6
+          yearly: 1
+        borgbackup_management_station: ubuntu-management-ubuntu-bionic
+      borgbackup_servers:
+        borgbackup_required: false
+      borgbackup_management:
+        borgbackup_management_user: root
+        borgbackup_management_sshkey: |
+          ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDXM5MuTbKbciopdHP314g0b72O5xaCf+4mt97bLPBwmW8UpOebWMkE+jYKET2B9fiOkyU9aWq+Tx7tfo31avN0nRf/VsxNupLcH605KdYOmw+EPjVDFLRXZb3j0AGDJM9YCd/KrwJlf8Tu4sXq0RhRNmqRBsBMjevpKCioQLzWJ1oCs1TLWxTS4nN7Jwy+Ou2gJEB7jKj907pFiCIPWRU4LLHlwE7DjunBr4THgE2Sj0tWkiYDKKoH++Rm62wVYL0oTLOJrQuqu52FEniPDgTnZwhy7b5MAHF5f2BscBorQxEkToWOVfX14Mzf+HC/arT2IPoE1Iv2XdWoiGiaWnyr
+    host_vars:
+      ubuntu-client-ubuntu-bionic:
+        borgbackup_passphrase: soo6Uabiex
+        borgbackup_include:
+          - "/etc"
+          - "/root"
+          - "/var/log"
+          - "/home"
+          - "/var/cache"
+        borgbackup_exclude:
+          - "/var/cache/apt"
+        borgbackup_pre_commands:
+          - "dpkg --get-selections > /root/packages"
+        borgbackup_post_commands:
+          - "apt list"
+      ubuntu-management-ubuntu-bionic:
+        borgbackup_install_from_pkg: true
+        borgbackup_passphrase: 798uoknakjla
+        borgbackup_include:
+          - "/etc"
+          - "/root"
+          - "/var/log"
+          - "/home"
+  lint:
+    name: ansible-lint
+    options:
+      x: ["204"]
+verifier:
+  name: testinfra
+  options:
+    verbose: true
+  lint:
+    name: flake8

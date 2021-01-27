@@ -1,0 +1,55 @@
+---
+# tasks file for barman_install
+- name: barman_install
+  debug:
+    msg: "barman_install!"
+
+
+- name: install epel
+  yum:
+    name: epel-release
+    state: present
+
+- name: install barman
+  yum:
+    name: "{{ barman_packages }}"
+    state: present
+
+
+- name: config master
+  ansible.builtin.template:
+    src: streaming-server.conf.j2
+    dest: /etc/barman.d/streaming-server.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: set pgpass
+  ansible.builtin.template:
+    src: pgpass.j2
+    dest: /var/lib/barman/.pgpass
+    owner: barman
+    group: barman
+    mode: '0600'
+
+- name: start backup
+  command: barman switch-xlog --force --archive streaming
+  become_user: "barman"
+  ignore_errors: yes
+  # notify:
+  #   - restart postgres
+
+  #    1  cd
+  #   2  barman check
+  #   3  barman check replication
+  #   4  barman check streaming
+  #   5  barman 
+  #   6  barman replication-status streaming
+  #   7  exit
+  #   8  barman replication-status streaming
+  #   9  barman backup streaming
+  #  10  barman check streaming
+  #  11  barman switch-xlog --force --archive streaming
+  #  12  barman check streaming
+  #  13  barman backup streaming
+  #  14  barman show-server streaming

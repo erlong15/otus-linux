@@ -1,0 +1,62 @@
+---
+driver:
+  name: docker
+lint:
+  name: yamllint
+platforms:
+  - name: lamp-client-debian-10
+    hostname: lamp-client-debian-10
+    image: debian:10
+    command: /lib/systemd/systemd
+    privileged: true
+    networks:
+      - name: lamp-borg
+    groups:
+      - clients
+      - lamp
+  - name: lamp-server-debian-10
+    hostname: lamp-server-debian-10
+    image: debian:10
+    networks:
+      - name: lamp-borg
+    groups:
+      - borgbackup_servers
+provisioner:
+  name: ansible
+  config_options:
+    defaults:
+      callback_whitelist: profile_tasks
+      gather_timeout: 30
+      interpreter_python: auto
+      jinja2_extensions: jinja2.ext.do
+      timeout: 30
+    ssh_connection:
+      pipelining: true
+  inventory:
+    group_vars:
+      all:
+        stage: docker
+        borgbackup_appendonly: true
+        borgbackup_servers:
+          - fqdn: lamp-server-debian-10
+            user: borgds
+            type: normal
+            home: /var/backup/
+            pool: repos
+            options: ""
+    host_vars:
+      lamp-client-debian-10:
+        apache2_adminhost_https: false
+        borgbackup_passphrase: soo6Uabiex
+  lint:
+    name: ansible-lint
+    options:
+      x: ["204"]
+scenario:
+  name: lamp
+verifier:
+  name: testinfra
+  options:
+    verbose: true
+  lint:
+    name: flake8
