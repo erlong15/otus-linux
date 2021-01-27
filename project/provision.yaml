@@ -1,8 +1,0 @@
----
-- name: Hello play
-  become: true
-  hosts: all
-  tasks:
-    - name: Hello
-      debug:
-        msg: "Hello!"

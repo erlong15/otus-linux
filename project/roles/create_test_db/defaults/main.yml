@@ -1,5 +1,0 @@
----
-# defaults file for create_test_db
-pg_master_ip: "192.168.50.9"
-pg_slave_ip: "192.168.50.20"
-barman_ip: "192.168.50.30"

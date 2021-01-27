@@ -1,4 +1,0 @@
-firewalld_open_port:
-  - port: "22"
-  - port: "9100"
-  - port: "8000"

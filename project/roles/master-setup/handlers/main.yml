@@ -1,6 +1,0 @@
----
-# handlers file for master-setup
-- name: restart postgres
-  systemd:
-    name: postgresql-11
-    state: restarted

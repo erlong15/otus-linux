@@ -1,6 +1,0 @@
----
-# handlers file for rsyslog-server
-- name: restart rsyslog
-  systemd:
-    name: rsyslog
-    state: restarted
