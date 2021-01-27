@@ -14,6 +14,7 @@ User=vagrant
 Group=vagrant
 
 ExecStart=/opt/venv/bin/python -u /opt/healthchecks/manage.py runserver 0.0.0.0:8000
+SyslogIdentifier=django
 
 PrivateDevices=true
 ProtectHome=true
