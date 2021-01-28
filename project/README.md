@@ -43,6 +43,20 @@ make install
 
 ### База данных
 
+* Используется Postgres 11
+* при падении мастера
+  * Промоутим реплику в мастер
+
+  ```bash
+  sudo -u postgres /usr/pgsql-11/bin/pg_ctl promote  -D /var/lib/pgsql/11/data/
+  ```
+
+  * Заливаем Ansible Новые настрйоки базы для приложения
+  
+  ```bash
+  make limit L="app1,app2 --tag django -e django_db_host=db2"
+  ```
+
 ### Мониторинг
 
 * Развернут стек prometheus * alertmanager * grafana
