@@ -30,6 +30,8 @@ make install
 
 ## Описание
 
+![Схема](./1.drawio.png)
+
 ### Веб приложение
 
 * https от Let's Encript

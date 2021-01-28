@@ -36,6 +36,8 @@
   command: barman switch-xlog --force --archive streaming
   become_user: "barman"
   ignore_errors: yes
+  # retries: 3
+  # delay: 10 # in seconds
   # notify:
   #   - restart postgres
 
