@@ -10,7 +10,7 @@ DATABASES = {
          'NAME': 'otus',
          'USER': 'django',
          'PASSWORD': 'pass123pass',
-         'HOST': 'db1',
+         'HOST': '{{ django_db_host }}',
          'TEST': {'CHARSET': 'UTF8'}
      }
  }

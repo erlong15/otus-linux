@@ -10,6 +10,7 @@
       - postgresql-libs
       - postgresql-devel
       - python-setuptools
+      - mailcap
 
 - name: Install build tools
   yum:
@@ -29,7 +30,11 @@
     virtualenv: /opt/venv
     virtualenv_command: virtualenv-3
   notify: restart django
-
+  pip:
+    name: uwsgi
+    virtualenv: /opt/venv
+    virtualenv_command: virtualenv-3
+  notify: restart django
 
 - name: config app1
   template:
@@ -37,6 +42,11 @@
     dest: /opt/healthchecks/hc/local_settings.py
   notify: restart django
 
+- name: django collectstatic
+  community.general.django_manage:
+    command: collectstatic
+    project_path: "/opt/healthchecks"
+    virtualenv: "/opt/venv"
 
 - name: django migrate
   community.general.django_manage:

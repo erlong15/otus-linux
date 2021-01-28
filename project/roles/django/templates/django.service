@@ -13,12 +13,25 @@ StartLimitBurst=5
 User=vagrant
 Group=vagrant
 
-ExecStart=/opt/venv/bin/python -u /opt/healthchecks/manage.py runserver 0.0.0.0:8000
+#ExecStart=/opt/venv/bin/python -u /opt/healthchecks/manage.py runserver 0.0.0.0:8000 --insecure
+ExecStart=/opt/venv/bin/uwsgi \
+    --master \
+    --enable-threads \
+    --protocol=http \
+    --http-socket=:8000 \
+    --uid=vagrant \
+    --virtualenv=/opt/venv \
+    --chdir=/opt/healthchecks/ \
+    --home=/opt/venv \
+    --wsgi-file=hc/wsgi.py \
+    --processes=4 \
+    --static-map=/static/=/opt/healthchecks/static-collected/
 SyslogIdentifier=django
-
+Environment="DEBUG=True"
 PrivateDevices=true
 ProtectHome=true
 ProtectSystem=full
-
+KillSignal=SIGQUIT
+Type=notify
 [Install]
 WantedBy=multi-user.target
