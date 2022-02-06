@@ -1,0 +1,79 @@
+{
+  "builders": [
+    {
+      "boot_command": [
+        "<tab> text ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/vagrant.ks<enter><wait>"
+      ],
+      "boot_wait": "10s",
+      "disk_size": "10240",
+      "export_opts": [
+        "--manifest",
+        "--vsys",
+        "0",
+        "--description",
+        "{{user `artifact_description`}}",
+        "--version",
+        "{{user `artifact_version`}}"
+      ],
+      "guest_os_type": "RedHat_64",
+      "http_directory": "http",
+      "iso_checksum": "sha256:07b94e6b1a0b0260b94c83d6bb76b26bf7a310dc78d7a9c7432809fb9bc6194a",
+      "iso_url": "http://mirror.corbina.net/pub/Linux/centos/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso",
+      "name": "{{user `image_name`}}",
+      "output_directory": "builds",
+      "shutdown_command": "sudo -S /sbin/halt -h -p",
+      "shutdown_timeout": "5m",
+      "ssh_password": "vagrant",
+      "ssh_port": 22,
+      "ssh_pty": true,
+      "ssh_timeout": "20m",
+      "ssh_username": "vagrant",
+      "type": "virtualbox-iso",
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "1024"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ],
+      "vm_name": "packer-centos-vm"
+    }
+  ],
+  "post-processors": [
+    {
+      "compression_level": "7",
+      "output": "centos-{{user `artifact_version`}}-kernel-5-x86_64-Minimal.box",
+      "type": "vagrant"
+    }
+  ],
+  "provisioners": [
+    {
+      "execute_command": "{{.Vars}} sudo -S -E bash '{{.Path}}'",
+      "expect_disconnect": true,
+      "override": {
+        "{{user `image_name`}}": {
+          "scripts": [
+            "scripts/stage-1-kernel-update.sh",
+            "scripts/stage-2-clean.sh"
+          ]
+        }
+      },
+      "pause_before": "20s",
+      "start_retry_timeout": "1m",
+      "type": "shell"
+    }
+  ],
+  "variables": {
+    "artifact_description": "CentOS 7.7 with kernel 5.x",
+    "artifact_version": "7.7.1908",
+    "image_name": "centos-7.7"
+  }
+}
+
