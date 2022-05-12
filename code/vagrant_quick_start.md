@@ -4,10 +4,10 @@
 2. Устанавливаете VirtualBox: <https://www.tecmint.com/install-virtualbox-on-redhat-centos-fedora>
 3. Клонируете репозиторий со стендом и запускаете виртуальную машину:
     ```bash
-    git clone git@github.com:erlong15/otus-linux.git  
-    cd otuslinux  
+    git clone git@github.com:IgorBashta/otus.git  
+    cd ./otus/code/  
     vagrant up  
-    vagrant ssh otuslinux  
+    vagrant ssh otus  
     ```
 
 Полезные ссылки:  
