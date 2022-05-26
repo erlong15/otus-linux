@@ -5,7 +5,7 @@
 3. Клонируете репозиторий со стендом и запускаете виртуальную машину:
     ```bash
     git clone git@github.com:erlong15/otus-linux.git  
-    cd otuslinux  
+    cd otus-linux  
     vagrant up  
     vagrant ssh otuslinux  
     ```
