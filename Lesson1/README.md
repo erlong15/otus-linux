@@ -86,7 +86,7 @@ vagrant vbguest --status
 ### Загрузка образа в Vagrant cloud
 Логин в vagrant cloud: ``` vagrant cloud auth login ```
 
-Публикование образа:
+Опубликование образа:
 ``` 
 vagrant cloud publish --release <user_account>/centos8-kernel5 1.0 virtualbox centos-8-kernel-5-x86_64-Minimal.box
 ```
