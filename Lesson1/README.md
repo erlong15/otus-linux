@@ -1,6 +1,6 @@
-* Домашнее задание: "Обновить ядро в базовой системе"
+# Домашнее задание: "Обновить ядро в базовой системе"
 
-** Описание/Пошаговая инструкция выполнения домашнего задания:
+## Описание/Пошаговая инструкция выполнения домашнего задания:
 
 В материалах к занятию есть методичка, в которой описана процедура обновления ядра из репозитория.
 По данной методичке требуется выполнить необходимые действия.
@@ -12,9 +12,9 @@ https://docs.google.com/document/d/1fZUXL30bDhJEQpDQgtfv3Nj4WYWto98AaYlC1vJ2LkQ/
 Методичка Vagrant-стенд для обновления ядра и создания образа системы
 https://docs.google.com/document/d/12sC884LuLGST3-tZYQBDPvn6AH8AGJCK/edit?usp=sharing&ouid=107126378526912727172&rtpof=true&sd=true
 
-** Решение
+## Решение
 
-*** Создание образа системы
+### Создание образа системы
 ```
 packer build centos.json
 ```
@@ -28,7 +28,7 @@ packer build centos.json
 --> centos-7.9: 'virtualbox' provider box: centos-7.9.2009-kernel-6-x86_64-Minimal.box
 ```
 
-Импортирование полученного vagrant box в Vagrant:
+### Импортирование полученного vagrant box в Vagrant:
 ```
 vagrant box add centos7-kernel6 centos-7.9.2009-kernel-6-x86_64-Minimal.box
 ```
@@ -77,7 +77,7 @@ vagrant vbguest --status
 ![vbguest installed but not running](imgs/vbguest-installed-but-not-running.png)
 
 
-*** Загрузка образа в Vagrant cloud
+### Загрузка образа в Vagrant cloud
 Логин в vagrant cloud: ``` vagrant cloud auth login ```
 
 Публикование образа:
@@ -90,6 +90,8 @@ vagrant cloud publish --release <user_account>/centos8-kernel5 1.0 virtualbox ce
 config.vm.box = "vlyulin/centos7-kernel6"
 config.vm.box_version = "1.0"
 ```
+
+### Проверка 
 
 Проверяем настройки запуском виртуальной машины:
 ```
