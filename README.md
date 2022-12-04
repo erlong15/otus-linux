@@ -1,8 +1,8 @@
-# Инструкции
+# Курс "Administrator Linux. Profeccional", OTUS
+Студент: Люлин Вадим
 
-* [Как начать Git](git_quick_start.md)
-* [Как начать Vagrant](vagrant_quick_start.md)
+## Содержание
 
-## otus-linux
+* [ДЗ: Обновить ядро в базовой системе](Lesson1/README.md)
 
-Используйте этот [Vagrantfile](Vagrantfile) - для тестового стенда.
+

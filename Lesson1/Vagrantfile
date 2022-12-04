@@ -1,0 +1,230 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+MACHINES = {
+  :otuslinux => {
+        :box_name => "vlyulin/centos7-kernel6",
+        :box_version => "1.0",
+        :ip_addr => '192.168.56.2',
+        :disks => {
+                :sata1 => {
+			:dname => 'sata1',
+                        :dfile => './sata1.vdi',
+                        :size => 250,
+                        :port => 1
+                },
+                :sata2 => {
+                        :dname => 'sata2',
+                        :dfile => './sata2.vdi',
+                        :size => 250, # Megabytes
+                        :port => 2
+                },
+                :sata3 => {
+                        :dname => 'sata3',
+                        :dfile => './sata3.vdi',
+                        :size => 250,
+                        :port => 3
+                },
+                :sata4 => {
+                        :dname => 'sata4',
+                        :dfile => './sata4.vdi',
+                        :size => 250, # Megabytes
+                        :port => 4
+                }
+
+        }
+  },
+}
+
+$sdb = <<-SCRIPT
+if df | grep "/dev/sdb1"
+then
+  echo '/dev/sdb1 exist'
+else
+  parted /dev/sdb mklabel msdos
+  parted /dev/sdb mkpart primary 0% 100%
+  mkfs.xfs /dev/sdb1
+fi
+mkdir -p /mnt/sata1
+if grep -Fxq "sdb1" /etc/fstab
+then
+  echo 'sdb1 exist in fstab'
+else
+  echo `blkid /dev/sdb1 | awk '{print$2}' | sed -e 's/"//g'` /mnt/sata1   xfs   defaults,noatime   0   0 >> /etc/fstab
+fi
+if mount | grep /mnt/sata1 > /dev/null; then
+  echo "/dev/sdb1 mounted /mnt/sata1"
+  umount /mnt/sata1
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata1
+else
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata1
+fi
+SCRIPT
+
+$sdc = <<-SCRIPT
+if df | grep "/dev/sdc1"
+then
+  echo '/dev/sdc1 exist'
+else
+  parted /dev/sdc mklabel msdos
+  parted /dev/sdc mkpart primary 0% 100%
+  mkfs.xfs /dev/sdc1
+fi
+mkdir -p /mnt/sata2
+if grep -Fxq "sdc1" /etc/fstab
+then
+  echo 'sdc1 exist in fstab'
+else
+  echo `blkid /dev/sdc1 | awk '{print$2}' | sed -e 's/"//g'` /mnt/sata2   xfs   defaults,noatime   0   0 >> /etc/fstab
+fi
+if mount | grep /mnt/sata2 > /dev/null; then
+  echo "/dev/sdc1 mounted /mnt/sata2"
+  umount /mnt/sata2
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata2
+else
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata2
+fi
+SCRIPT
+
+$sdd = <<-SCRIPT
+if df | grep "/dev/sdd1"
+then
+  echo '/dev/sdd1 exist'
+else
+  parted /dev/sdd mklabel msdos
+  parted /dev/sdd mkpart primary 0% 100%
+  mkfs.xfs /dev/sdd1
+fi
+mkdir -p /mnt/sata3
+if grep -Fxq "sdd1" /etc/fstab
+then
+  echo 'sdd1 exist in fstab'
+else
+  echo `blkid /dev/sdd1 | awk '{print$2}' | sed -e 's/"//g'` /mnt/sata3   xfs   defaults,noatime   0   0 >> /etc/fstab
+fi
+if mount | grep /mnt/sata3 > /dev/null; then
+  echo "/dev/sdd1 mounted /mnt/sata3"
+  umount /mnt/sata3
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata3
+else
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata3
+fi
+SCRIPT
+
+$sde = <<-SCRIPT
+if df | grep "/dev/sde1"
+then
+  echo '/dev/sde1 exist'
+else
+  parted /dev/sde mklabel msdos
+  parted /dev/sde mkpart primary 0% 100%
+  mkfs.xfs /dev/sde1
+fi
+mkdir -p /mnt/sata4
+if grep -Fxq "sde1" /etc/fstab
+then
+  echo 'sde1 exist in fstab'
+else
+  echo `blkid /dev/sde1 | awk '{print$2}' | sed -e 's/"//g'` /mnt/sata4   xfs   defaults,noatime   0   0 >> /etc/fstab
+fi
+if mount | grep /mnt/sata4 > /dev/null; then
+  echo "/dev/sde1 mounted /mnt/sata4"
+  umount /mnt/sata4
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata4
+else
+  mount -t vboxsf -o uid=1000,gid=1000 /mnt/sata4
+fi
+SCRIPT
+
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+
+  if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = false
+  end
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  config.vm.box = "vlyulin/centos7-kernel6"
+  config.vm.box_version = "1.0"
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  # config.vm.synced_folder "../data", "/vagrant_data"
+
+  MACHINES.each do |boxname, boxconfig|
+
+      config.vm.define boxname do |box|
+
+          box.vm.box = boxconfig[:box_name]
+          box.vm.box_version = boxconfig[:box_version]
+          box.vbguest.installer_options = { allow_kernel_upgrade: true }
+          box.vm.host_name = boxname.to_s
+
+          box.vm.network "private_network", ip: boxconfig[:ip_addr]
+
+	  config.vm.provision "shell", inline: <<-SHELL
+                  sudo kdir -p /mnt/cdrom
+	          sudo mount /dev/cdrom /mnt/cdrom
+		  sudo apt-get install make gcc linux-headers-$(uname -r)
+		  sudo /media/cdrom/VBoxLinuxAdditions.run
+	  SHELL
+
+          box.vm.provider :virtualbox do |vb|
+                  vb.customize ["modifyvm", :id, "--memory", "1024"]
+                  needsController = false
+		  # create disks
+                  boxconfig[:disks].each do |dname, dconf|
+                          unless File.exist?(dconf[:dfile])
+                                vb.customize ['createhd', '--filename', dconf[:dfile], '--variant', 'Fixed', '--size', dconf[:size]]
+                                needsController =  true
+                          end
+
+                  end
+                  if needsController == true
+                     vb.customize ["storagectl", :id, "--name", "SATA", "--add", "sata" ]
+                     # attach disks
+                     boxconfig[:disks].each do |dname, dconf|
+                         vb.customize ['storageattach', :id,  '--storagectl', 'SATA', '--port', dconf[:port], '--device', 0, '--type', 'hdd', '--medium', dconf[:dfile]]
+                     end
+                  end
+          end
+         
+          # format and mount disks 
+	  box.vm.provision "shell", inline: $sdb
+          box.vm.provision "shell", inline: $sdc
+          box.vm.provision "shell", inline: $sdd
+          box.vm.provision "shell", inline: $sde
+
+	  # fight with Permission denide for mounts
+	  box.vm.provision "shell", inline: <<-SHELL
+		sudo usermod -aG vboxsf vagrant
+		sudo chown -R vagrant:vagrant /mnt/sata1/
+		sudo chown -R vagrant:vagrant /mnt/sata2/
+		sudo chown -R vagrant:vagrant /mnt/sata3/
+		sudo chown -R vagrant:vagrant /mnt/sata4/
+	  SHELL
+
+          # add shared folders 
+          box.vm.provider :virtualbox do |vb|
+	      boxconfig[:disks].each do |dname, dconf|
+                # if File.exist?(dconf[:dfile])
+		   config.vm.synced_folder dconf[:dname], "/mnt/#{dconf[:dname]}", create: true
+                # end
+              end
+	  end
+      end
+  end
+end
+
