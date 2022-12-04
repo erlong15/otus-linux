@@ -46,10 +46,16 @@ vagrant box add centos7-kernel6 centos-7.9.2009-kernel-6-x86_64-Minimal.box
 
 Проверка версии ядра: 
 ```
-[vagrant@otus-c8 ~]$ uname -r
+[vagrant@otuslinux ~]$ uname -r
+6.0.11-1.el7.elrepo.x86_64
 ```
 
-Добавление VirtualBox addition:
+## ДЗ с **: в вашем образе нормально работают VirtualBox Shared Folders.
+
+В Vagrantfile добавлено создание дисков, их форматирование, монтирование.
+Добавлена синхронизация shared folders с созданными дисками.
+
+Для нормальной работы shared folders требуется Добавление vbguest:
 ```
 vagrant plugin install vagrant-vbguest
 vagrant ssh -c "cat /var/log/vboxadd-install.log"
@@ -103,10 +109,6 @@ vagrant up
 
 Хотя shared folders показывает:
 ![Shared folders](imgs/vm-mounted-shared-folders.png)
-
-![VM](imgs/vm-with-disks.png)
-
-![Attached disks](imgs/mounted-disks.png)
 
 
 
