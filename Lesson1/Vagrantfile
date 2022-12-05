@@ -143,9 +143,9 @@ SCRIPT
 # you're doing.
 Vagrant.configure("2") do |config|
 
-  if Vagrant.has_plugin?("vagrant-vbguest") then
-    config.vbguest.auto_update = false
-  end
+  # if Vagrant.has_plugin?("vagrant-vbguest") then
+    config.vbguest.auto_update = true
+  # end
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
