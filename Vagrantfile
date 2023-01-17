@@ -16,20 +16,22 @@ MACHINES = {
                         :size => 250, # Megabytes
 			:port => 2
 		},
-                :sata3 => {
-                        :dfile => './sata3.vdi',
-                        :size => 250,
-                        :port => 3
-                },
-                :sata4 => {
-                        :dfile => './sata4.vdi',
-                        :size => 250, # Megabytes
-                        :port => 4
-                }
-
-	}
-
-		
+		:sata3 => {
+				:dfile => './sata3.vdi',
+				:size => 250,
+				:port => 3
+		},
+		:sata4 => {
+				:dfile => './sata4.vdi',
+				:size => 250, # Megabytes
+				:port => 4
+		},
+		:sata5 => {
+				:dfile =>'./sata5.vdi',
+				:size => 250,
+				:port => 5
+		}
+	}	
   },
 }
 
